@@ -1,8 +1,16 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "UncialAntiqua";
+  src: url("/fonts/UncialAntiqua-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #1d4ed8;
+  --foreground: #ffffff;
 }
 
 @theme inline {
@@ -12,15 +20,43 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+/* ── Location button ping ── */
+@keyframes ping {
+  75%, 100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+/* ── Character idle float ──
+   Two variants with different timing so they bob out of sync,
+   making them feel like separate living characters.
+   The inner div carries this animation; the outer div carries
+   the travel transition — they never interfere. */
+
+@keyframes char-float {
+  0%, 100% { transform: translateY(0px)   rotate(-1deg); }
+  50%       { transform: translateY(-7px)  rotate(1deg);  }
+}
+
+/* Finn: slightly faster, leads the bob */
+.char-float-finn {
+  animation: char-float 2.6s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+/* Jake: slightly slower, lags behind — they stay out of sync */
+.char-float-jake {
+  animation: char-float 3.1s ease-in-out infinite 0.5s;
+  transform-origin: bottom center;
+}
+
+img {
+  image-rendering: crisp-edges;
 }
