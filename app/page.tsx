@@ -113,6 +113,24 @@ export default function Home() {
     return () => window.removeEventListener("scroll", holdFloor);
   }, [climbDone]);
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("map") !== "1") return;
+
+    // Remove the param from the URL without a reload
+    window.history.replaceState({}, "", "/");
+
+    // Wait one frame for the DOM to settle, then jump to the end
+    requestAnimationFrame(() => {
+      const el = introRef.current;
+      if (!el) return;
+      const floor = el.offsetTop + (el.offsetHeight - window.innerHeight);
+      window.scrollTo({ top: floor, behavior: "instant" });
+      setClimbProgress(1);
+      setClimbDone(true);
+    });
+  }, []); // runs once on mount
+
   function handleSelect(loc: (typeof locations)[0]) {
     setSelectedId(loc.id);
     setFinnPos({ x: loc.x + 3,   y: loc.y });

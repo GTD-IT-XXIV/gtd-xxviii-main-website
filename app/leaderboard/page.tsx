@@ -13,7 +13,7 @@ export default function Page() {
         justifyContent: "center",
       }}
     >
-      <Link href="/">
+      <Link href="/?map=1">
         <button
           style={{
             padding: "12px 28px",
