@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
+import SponsorsSection from "@/app/_components/SponsorsSection";
 
 const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
 const lerp = (a: number, b: number, t: number) => a + (b - a) * clamp(t, 0, 1);
@@ -186,6 +187,7 @@ export default function Home() {
   const mapInteractive = cloudSplitEased >= 0.999;
 
   return (
+    <>
     <div ref={introRef} className="relative w-full" style={{ height: "800vh", background: "#06070f" }}>
       <div className="sticky top-0 h-screen w-full overflow-hidden" style={{ background: "#06070f" }}>
 
@@ -466,5 +468,7 @@ export default function Home() {
 
       </div>
     </div>
+    <SponsorsSection />
+    </>
   );
 }
