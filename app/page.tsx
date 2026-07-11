@@ -14,16 +14,17 @@ function windowOpacity(p: number, start: number, end: number, fade = 0.045) {
 }
 
 const TRAIL_WAYPOINTS: { p: number; x: number }[] = [
-  { p: 0.08, x: 50 },
-  { p: 0.10, x: 53 },
-  { p: 0.24, x: 45 },
-  { p: 0.32, x: 60 },
-  { p: 0.44, x: 41 },
-  { p: 0.54, x: 59 },
-  { p: 0.64, x: 44 },
-  { p: 0.72, x: 58 },
-  { p: 0.80, x: 44 },
-  { p: 0.90, x: 56 },
+  { p: 0.00, x: 50 },
+  { p: 0.05, x: 38 },
+  { p: 0.17, x: 58 },
+  { p: 0.28, x: 40 },
+  { p: 0.37, x: 61 },
+  { p: 0.46, x: 47 },
+  { p: 0.53, x: 61 },
+  { p: 0.58, x: 46 },
+  { p: 0.60, x: 53 },
+  { p: 0.62, x: 48 },
+  { p: 0.63, x: 50 },
   { p: 1.00, x: 50 },
 ];
 
@@ -73,6 +74,19 @@ const colorMap: Record<string, { btn: string; ring: string; badge: string; borde
 
 const SPRING = "left 0.75s cubic-bezier(0.34,1.5,0.64,1), top 0.75s cubic-bezier(0.34,1.5,0.64,1)";
 
+// ── Walk cycle: frame_0 … frame_13 of Finn carrying Jake ──
+const WALK_FRAMES = 14;   // number of frames in public/images/finn_walk/
+const WALK_CYCLES = 20;   // full step-cycles across the whole climb (stride cadence)
+
+// ── Idle (breathing) loop played when the user stops scrolling ──
+const IDLE_FRAMES = 12;   // number of frames in public/images/finn_idle/
+const IDLE_FPS    = 8;    // idle playback speed (frames per second)
+const IDLE_DELAY  = 150;  // ms of no-scroll before switching walk → idle
+
+// ── Jump (leap off the cliff) and Land (touchdown at map centre) ──
+const JUMP_FRAMES = 10;   // number of frames in public/images/finn_jump/
+const LAND_FRAMES = 11;   // number of frames in public/images/finn_land/
+
 export default function Home() {
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [finnPos, setFinnPos]       = useState<CharPos>(IDLE);
@@ -81,8 +95,11 @@ export default function Home() {
   const introRef = useRef<HTMLDivElement>(null);
   const [climbProgress, setClimbProgress] = useState(0);
   const [climbDone, setClimbDone] = useState(false);
+  const [isScrolling, setIsScrolling] = useState(false);
+  const [idleFrame, setIdleFrame] = useState(0);
 
   useEffect(() => {
+    let idleTimer: ReturnType<typeof setTimeout>;
     function measure() {
       const el = introRef.current;
       if (!el) return;
@@ -92,11 +109,19 @@ export default function Home() {
       setClimbProgress(p);
       if (p >= 0.999) setClimbDone(true);
     }
+    function onScroll() {
+      measure();
+      // Mark as actively scrolling → play walk; flip to idle after a short pause.
+      setIsScrolling(true);
+      clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => setIsScrolling(false), IDLE_DELAY);
+    }
     measure();
-    window.addEventListener("scroll", measure, { passive: true });
+    window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", measure);
     return () => {
-      window.removeEventListener("scroll", measure);
+      clearTimeout(idleTimer);
+      window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", measure);
     };
   }, []);
@@ -131,6 +156,33 @@ export default function Home() {
     });
   }, []); // runs once on mount
 
+  // Preload every sprite set so switching never flashes an unloaded frame
+  useEffect(() => {
+    const sets: [string, number][] = [
+      ["finn_walk", WALK_FRAMES],
+      ["finn_idle", IDLE_FRAMES],
+      ["finn_jump", JUMP_FRAMES],
+      ["finn_land", LAND_FRAMES],
+    ];
+    for (const [dir, n] of sets) {
+      for (let i = 0; i < n; i++) {
+        const img = new window.Image();
+        img.src = `/images/${dir}/frame_${i}.png`;
+      }
+    }
+  }, []);
+
+  // Idle breathing loop: advance the idle frame on a timer while the user isn't
+  // actively scrolling. Shown during the walk phase and after landing on the map.
+  useEffect(() => {
+    if (isScrolling) return;
+    const id = setInterval(
+      () => setIdleFrame((f) => (f + 1) % IDLE_FRAMES),
+      1000 / IDLE_FPS,
+    );
+    return () => clearInterval(id);
+  }, [isScrolling]);
+
   function handleSelect(loc: (typeof locations)[0]) {
     setSelectedId(loc.id);
     setFinnPos({ x: loc.x + 3,   y: loc.y });
@@ -141,11 +193,71 @@ export default function Home() {
 
   // ── Derived animation values ──
 
-  const climbersTop     = lerp(82, 16, climbProgress);
+  // ── Phase timeline (all forward scroll) ──
+  //   0        → WALK_END   walk up the path onto the cliff plateau
+  //   WALK_END → FALL_END   jump off the cliff and fall toward the map centre
+  //                         under gravity; the clouds part around p=0.85 so the
+  //                         drop lands them onto the revealed map
+  //   FALL_END → 1.0        land (crouch) at map centre; sprite stays put
+  const WALK_END    = 0.63;   // finish climbing, launch off the cliff
+  const FALL_END    = 0.97;   // reach map centre (clouds essentially open by now)
+  const cliffTop    = 40;     // how high they climb before jumping (% from top)
+  const MAP_CENTER  = { x: 51, y: 55 };   // where the sprite lands on the map (a touch left + lower than dead centre)
+
+  const walking = climbProgress < WALK_END;
+  const landing = climbProgress >= FALL_END;              // crouch/settle at centre
+  const jumping = !walking && !landing;                   // airborne (hang + fall)
+
   const torchGlowSize   = lerp(260, 460, Math.min(climbProgress * 1.4, 1));
   const darknessOpacity = lerp(0.97, 0.28, clamp(climbProgress / 0.62, 0, 1));
   const skyGlowOpacity  = clamp((climbProgress - 0.55) / 0.35, 0, 1);
-  const climbersLeft    = trailX(climbProgress);
+
+  // ── Character position ──
+  // Walk up to cliffTop, then fall to map centre across the whole airborne
+  // window. The gravity curve (flightRaw²) means they start drifting down/right
+  // the instant they leave the cliff and accelerate — no dead hang — but most of
+  // the drop still lands during the cloud-part window onto the revealed map.
+  const spawnTop  = 88;   // starting height at p=0 (higher % = spawns lower on screen)
+  const walkTop   = lerp(spawnTop, cliffTop, clamp(climbProgress / WALK_END, 0, 1));
+  const flightRaw = clamp((climbProgress - WALK_END) / (FALL_END - WALK_END), 0, 1);
+  const flightEased = flightRaw * flightRaw;   // gravity: slow at first, then accelerating
+  // Once the climb is finished and a region is picked, the landed sprite travels
+  // to that region's pin (centred on it).
+  const travelTarget = climbDone ? locations.find((l) => l.id === selectedId) : undefined;
+  const climbersTop  = travelTarget ? travelTarget.y
+    : walking ? walkTop
+    : lerp(cliffTop, MAP_CENTER.y, flightEased);
+  const climbersLeft = travelTarget ? travelTarget.x
+    : walking ? trailX(climbProgress)
+    : lerp(trailX(WALK_END), MAP_CENTER.x, flightEased);
+  const traveled = travelTarget !== undefined;
+
+  // ── Which sprite + frame to show ──
+  // walk: scroll-driven step cycle (or idle breathing when stopped)
+  // jump: play jump frames across the airborne window (leap → hang → fall)
+  // land: play land frames across the landing window, holding the final standing frame
+  const walkFrame = Math.floor(climbProgress * WALK_FRAMES * WALK_CYCLES) % WALK_FRAMES;
+  const showIdle  = walking && !isScrolling;
+  const jumpFrame = Math.min(
+    JUMP_FRAMES - 1,
+    Math.floor(clamp((climbProgress - WALK_END) / (FALL_END - WALK_END), 0, 1) * JUMP_FRAMES),
+  );
+  const landFrame = Math.min(
+    LAND_FRAMES - 1,
+    Math.floor(clamp((climbProgress - FALL_END) / (1 - FALL_END), 0, 1) * LAND_FRAMES),
+  );
+
+  let spriteDir: string, spriteFrame: number;
+  if (climbDone)    { spriteDir = "finn_idle"; spriteFrame = idleFrame; }   // landed — breathe at map centre
+  else if (landing) { spriteDir = "finn_land"; spriteFrame = landFrame; }
+  else if (jumping) { spriteDir = "finn_jump"; spriteFrame = jumpFrame; }
+  else if (showIdle){ spriteDir = "finn_idle"; spriteFrame = idleFrame; }
+  else              { spriteDir = "finn_walk"; spriteFrame = walkFrame; }
+
+  // Face the direction they're weaving up the path; keep that facing through the jump.
+  const facingRight = walking
+    ? trailX(climbProgress) >= trailX(Math.max(0, climbProgress - 0.005))
+    : trailX(WALK_END) >= trailX(WALK_END - 0.005);
 
   const para0 = windowOpacity(climbProgress, 0.15, 0.34, 0.05);
   const para1 = windowOpacity(climbProgress, 0.40, 0.59, 0.05);
@@ -179,8 +291,11 @@ export default function Home() {
   const cloudLeftX  = lerp(0, -110, cloudSplitEased);
   const cloudRightX = lerp(0,  110, cloudSplitEased);
 
-  // Fade characters/torch/darkness/sky in the same window
+  // Fade the climb backdrop (torch/darkness/sky) as the clouds part…
   const climbSceneOpacity = lerp(1, 0, clamp((climbProgress - 0.85) / 0.15, 0, 1));
+  // …but the CHARACTER stays fully visible — it jumps off the cliff and lands on
+  // the map, so it must survive the reveal and remain at map centre.
+  const charOpacity = 1;
 
   // Map becomes interactive once clouds are fully gone
   const mapInteractive = cloudSplitEased >= 0.999;
@@ -229,20 +344,9 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Characters + location pins */}
+            {/* Location pins (the character itself is the shared z:10 sprite
+                that jumped onto the map — see below) */}
             <div className="absolute inset-0">
-              <div className="absolute z-10 pointer-events-none"
-                style={{ left: `${finnPos.x}%`, top: `${finnPos.y}%`, transform: "translate(-50%, -100%)", transition: SPRING }}>
-                <div className="char-float-finn">
-                  <Image src="/images/Finn.png" alt="Finn" width={64} height={88} style={{ objectFit: "contain" }} />
-                </div>
-              </div>
-              <div className="absolute z-10 pointer-events-none"
-                style={{ left: `${jakePos.x}%`, top: `${jakePos.y}%`, transform: "translate(-50%, -100%)", transition: SPRING }}>
-                <div className="char-float-jake">
-                  <Image src="/images/Jake.png" alt="Jake" width={50} height={61} unoptimized style={{ objectFit: "contain" }} />
-                </div>
-              </div>
 
               {locations.map((loc) => {
                 const c = colorMap[loc.color];
@@ -399,19 +503,29 @@ export default function Home() {
             opacity: climbSceneOpacity > 0 ? darknessOpacity * climbSceneOpacity : 0,
           }} />
 
-        {/* ── z:9 — Finn & Jake ── */}
-        <div className="absolute flex items-end gap-1.5"
+        {/* ── z:10 — Finn carrying Jake — walks up, jumps off the cliff, lands on
+             the map. Stays fully visible through the reveal (charOpacity), and
+             sits above the map (z:10 > map z:2) once landed. Desktop cinematic
+             only — mobile uses its own map card with location markers. ── */}
+        <div className="absolute pointer-events-none hidden md:block"
           style={{
-            zIndex: 9,
+            zIndex: 10,
             left: `${climbersLeft}%`,
             top: `${climbersTop}%`,
-            transform: "translate(-50%, -100%)",
-            opacity: climbSceneOpacity,
+            transform: `translate(-50%, -100%) scaleX(${facingRight ? 1 : -1})`,
+            opacity: charOpacity,
+            transition: traveled ? "left 0.75s cubic-bezier(0.34,1.5,0.64,1), top 0.75s cubic-bezier(0.34,1.5,0.64,1)"
+              : landing ? "left 0.2s linear, top 0.2s linear" : undefined,
           }}>
-          <Image src="/images/Jake.png" alt="Jake" width={42} height={52} unoptimized style={{ objectFit: "contain" }} />
-          <div className="w-[5px] h-9 rounded-full self-center"
-            style={{ background: "linear-gradient(to top, #6b3f1d, #f3a44d)", boxShadow: "0 0 18px 6px rgba(255,170,80,0.55)" }} />
-          <Image src="/images/Finn.png" alt="Finn" width={48} height={64} style={{ objectFit: "contain" }} />
+          <Image
+            src={`/images/${spriteDir}/frame_${spriteFrame}.png`}
+            alt="Finn and Jake climbing"
+            width={64}
+            height={70}
+            unoptimized
+            priority
+            style={{ objectFit: "contain", imageRendering: "pixelated" }}
+          />
         </div>
 
         {/* ── z:20 — Storyline textboxes ── */}
