@@ -167,7 +167,7 @@ export default function CommitteeClient() {
                 initial="hidden"
                 animate="show"
                 exit="exit"
-                className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 w-full max-w-[880px]"
+                className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 w-full max-w-[1000px]"
               >
                 {topic.members.map((member, i) => (
                   <motion.div

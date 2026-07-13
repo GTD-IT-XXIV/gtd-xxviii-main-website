@@ -59,9 +59,9 @@ export default function MemberCard({ member, index, topicIndex, onExpand }: Memb
       {/* ── Name on blue banner ── */}
       <div
         className="absolute left-0 right-0 flex items-center justify-center"
-        style={{ bottom: "9%", height: "11%" }}
+        style={{ bottom: "17.5%", height: "7%" }}
       >
-        <span className="card-banner-text text-white text-xs sm:text-sm md:text-base lg:text-lg font-bold truncate px-4">
+        <span className="card-banner-text text-white text-[10px] sm:text-xs md:text-sm font-bold truncate px-4">
           {member.name}
         </span>
       </div>
@@ -102,7 +102,7 @@ export function ExpandedCard({ member, index, topicIndex, onClose }: ExpandedCar
       <motion.div
         layoutId={`card-${topicIndex}-${index}`}
         className="relative z-10 cursor-pointer"
-        style={{ width: "min(340px, 88vw)", aspectRatio: "3 / 4.2" }}
+        style={{ width: "min(400px, 90vw)", aspectRatio: "3 / 4.2" }}
         onClick={onClose}
       >
         {/* ── Card frame ── */}
@@ -134,7 +134,7 @@ export function ExpandedCard({ member, index, topicIndex, onClose }: ExpandedCar
           className="absolute flex flex-col items-center justify-center gap-1"
           style={{ top: "52%", left: "13%", right: "13%", bottom: "24%" }}
         >
-          <span className="expanded-detail-text text-stone-900 text-base sm:text-lg md:text-xl font-bold text-center leading-tight">
+          <span className="expanded-detail-text text-stone-900 text-base sm:text-lg md:text-lg font-bold text-center leading-tight">
             {member.full_name}
           </span>
           <span className="expanded-detail-text text-stone-700 text-xs sm:text-sm md:text-base text-center">

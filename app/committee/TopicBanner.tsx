@@ -111,9 +111,9 @@ export default function TopicBanner({
             {/* ── Title on blue banner ── */}
             <div
               className="absolute left-0 right-0 flex items-center justify-center z-20"
-              style={{ bottom: "14%", height: "14%" }}
+              style={{ bottom: "21%", height: "10%", transform: "translateX(7.5px)" }}
             >
-              <h2 className="topic-title text-white text-base sm:text-2xl md:text-3xl font-bold uppercase">
+              <h2 className="topic-title text-white text-[10px] sm:text-[15px] md:text-xl font-bold uppercase -translate-x-1 sm:translate-x-0">
                 {topic.title}
               </h2>
             </div>
