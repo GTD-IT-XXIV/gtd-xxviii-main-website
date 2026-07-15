@@ -221,7 +221,7 @@ export default function Home() {
                 GTD XXVIII
               </h1>
               <h2 className="text-6xl font-bold tracking-widest text-white uppercase mt-1"
-                style={{ fontFamily: "UncialAntiqua, serif", textShadow: "0 2px 12px rgba(0,0,0,0.55)" }}>
+                style={{ fontFamily: "AdventureTime, UncialAntiqua, serif", textShadow: "0 2px 12px rgba(0,0,0,0.55)" }}>
                 AETERNA
               </h2>
               <p className="text-sky-200 text-sm tracking-wider mt-1">
@@ -234,13 +234,13 @@ export default function Home() {
               <div className="absolute z-10 pointer-events-none"
                 style={{ left: `${finnPos.x}%`, top: `${finnPos.y}%`, transform: "translate(-50%, -100%)", transition: SPRING }}>
                 <div className="char-float-finn">
-                  <Image src="/images/Finn.png" alt="Finn" width={64} height={88} style={{ objectFit: "contain" }} />
+                  <Image src="/images/finn.png" alt="Finn" width={64} height={88} style={{ objectFit: "contain" }} />
                 </div>
               </div>
               <div className="absolute z-10 pointer-events-none"
                 style={{ left: `${jakePos.x}%`, top: `${jakePos.y}%`, transform: "translate(-50%, -100%)", transition: SPRING }}>
                 <div className="char-float-jake">
-                  <Image src="/images/Jake.png" alt="Jake" width={50} height={61} unoptimized style={{ objectFit: "contain" }} />
+                  <Image src="/images/jake.png" alt="Jake" width={50} height={61} unoptimized style={{ objectFit: "contain" }} />
                 </div>
               </div>
 
@@ -270,7 +270,7 @@ export default function Home() {
               <h1 className="text-3xl font-bold tracking-widest text-white uppercase"
                 style={{ textShadow: "0 2px 8px rgba(0,0,0,0.5)" }}>GTD XXVIII</h1>
               <h2 className="text-5xl font-bold tracking-widest text-white uppercase mt-1"
-                style={{ fontFamily: "UncialAntiqua, serif", textShadow: "0 2px 8px rgba(0,0,0,0.5)" }}>AETERNA</h2>
+                style={{ fontFamily: "AdventureTime, UncialAntiqua, serif", textShadow: "0 2px 8px rgba(0,0,0,0.5)" }}>AETERNA</h2>
               <p className="text-sky-200 text-xs tracking-wider mt-0.5">
                 {selectedLoc ? `✈ Traveling to ${selectedLoc.name}…` : "Choose your destination"}
               </p>
@@ -293,11 +293,11 @@ export default function Home() {
                 })}
                 <div className="absolute z-10 pointer-events-none"
                   style={{ left: `${finnPos.x}%`, top: `${finnPos.y}%`, transform: "translate(-50%, -100%)", transition: SPRING }}>
-                  <Image src="/images/Finn.png" alt="Finn" width={26} height={36} style={{ objectFit: "contain" }} />
+                  <Image src="/images/finn.png" alt="Finn" width={26} height={36} style={{ objectFit: "contain" }} />
                 </div>
                 <div className="absolute z-10 pointer-events-none"
                   style={{ left: `${jakePos.x}%`, top: `${jakePos.y}%`, transform: "translate(-50%, -100%)", transition: SPRING }}>
-                  <Image src="/images/Jake.png" alt="Jake" width={22} height={28} unoptimized style={{ objectFit: "contain" }} />
+                  <Image src="/images/jake.png" alt="Jake" width={22} height={28} unoptimized style={{ objectFit: "contain" }} />
                 </div>
               </div>
               <div className="bg-slate-950/90 divide-y divide-white/5">
@@ -408,10 +408,10 @@ export default function Home() {
             transform: "translate(-50%, -100%)",
             opacity: climbSceneOpacity,
           }}>
-          <Image src="/images/Jake.png" alt="Jake" width={42} height={52} unoptimized style={{ objectFit: "contain" }} />
+          <Image src="/images/jake.png" alt="Jake" width={42} height={52} unoptimized style={{ objectFit: "contain" }} />
           <div className="w-[5px] h-9 rounded-full self-center"
             style={{ background: "linear-gradient(to top, #6b3f1d, #f3a44d)", boxShadow: "0 0 18px 6px rgba(255,170,80,0.55)" }} />
-          <Image src="/images/Finn.png" alt="Finn" width={48} height={64} style={{ objectFit: "contain" }} />
+          <Image src="/images/finn.png" alt="Finn" width={48} height={64} style={{ objectFit: "contain" }} />
         </div>
 
         {/* ── z:20 — Storyline textboxes ── */}
@@ -430,7 +430,7 @@ export default function Home() {
                 transform: `translate(${isRight ? lerp(28, 0, storylineOpacities[i]) : lerp(-28, 0, storylineOpacities[i])}px, -50%)`,
               }}>
               <p className="inline-block text-amber-50/95 text-sm md:text-base leading-relaxed tracking-wide bg-black/35 backdrop-blur-sm border border-white/10 rounded-2xl px-6 py-5"
-                style={{ fontFamily: "UncialAntiqua, serif", textShadow: "0 2px 10px rgba(0,0,0,0.6)" }}>
+                style={{ fontFamily: "AdventureTime, UncialAntiqua, serif", textShadow: "0 2px 10px rgba(0,0,0,0.6)" }}>
                 {line}
               </p>
             </div>

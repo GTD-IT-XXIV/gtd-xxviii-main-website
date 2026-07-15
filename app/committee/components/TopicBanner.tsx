@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import type { CommitteeTopic } from "./committeeConfig";
+import type { CommitteeTopic } from "../committeeConfig";
 
 interface TopicBannerProps {
   topic: CommitteeTopic;

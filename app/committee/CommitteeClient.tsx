@@ -6,8 +6,8 @@ import Link from "next/link";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 
 import { committeeTopics } from "./committeeConfig";
-import TopicBanner from "./TopicBanner";
-import MemberCard, { ExpandedCard } from "./MemberCard";
+import TopicBanner from "./components/TopicBanner";
+import MemberCard, { ExpandedCard } from "./components/MemberCard";
 import "./committee.css";
 
 /* ── Stagger variants for the member card grid ── */
@@ -33,14 +33,14 @@ const cardVariants = {
     x: 0,
     opacity: 1,
     scale: 1,
-    transition: { type: "spring", stiffness: 260, damping: 22 },
+    transition: { type: "spring" as const, stiffness: 260, damping: 22 },
   },
   exit: (direction: number) => ({
     y: 40,
     x: direction * -30,
     opacity: 0,
     scale: 0.9,
-    transition: { duration: 0.2, ease: "easeIn" },
+    transition: { duration: 0.2, ease: "easeIn" as const },
   }),
 };
 

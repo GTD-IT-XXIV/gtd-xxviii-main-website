@@ -1,7 +1,3 @@
-// ─── Committee Page Data Config ─────────────────────────────────
-// Add / remove members and topics here. The page will update automatically.
-// Place member photos in public/images/committee/<topic_folder>/
-
 export interface CommitteeMember {
   name: string;           // Short name shown on card banner
   full_name: string;      // Full name in expanded view
@@ -72,7 +68,7 @@ export const committeeTopics: CommitteeTopic[] = [
     members: [
   {
     name: "Audria",
-    full_name: "Audria Akbar",
+    full_name: "Audria",
     year_course: "",
     og: "",
     first_image: "/images/bfm/audria1.jpg",
@@ -80,7 +76,7 @@ export const committeeTopics: CommitteeTopic[] = [
   },
   {
     name: "Christian",
-    full_name: "Christian Vilaril Tjendra",
+    full_name: "Christian",
     year_course: "",
     og: "",
     first_image: "/images/bfm/christian1.jpg",

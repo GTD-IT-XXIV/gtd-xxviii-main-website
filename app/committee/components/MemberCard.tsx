@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import type { CommitteeMember } from "./committeeConfig";
+import type { CommitteeMember } from "../committeeConfig";
 
 interface MemberCardProps {
   member: CommitteeMember;
@@ -44,15 +44,15 @@ export default function MemberCard({ member, index, topicIndex, onExpand }: Memb
 
       {/* ── Member photo (positioned inside the frame's parchment area) ── */}
       <div
-        className="absolute overflow-hidden rounded-sm"
-        style={{ top: "13%", left: "13%", right: "13%", bottom: "24%" }}
+        className="absolute overflow-hidden"
+        style={{ top: "20%", left: "25%", right: "25%", bottom: "30%" }}
       >
         <Image
           src={member.first_image}
           alt={member.name}
           fill
           sizes="(max-width: 640px) 35vw, (max-width: 1024px) 22vw, 14vw"
-          className="object-cover"
+          className="object-cover scale-123"
         />
       </div>
 
@@ -117,15 +117,15 @@ export function ExpandedCard({ member, index, topicIndex, onClose }: ExpandedCar
 
         {/* ── Second image (top portion of parchment area) ── */}
         <div
-          className="absolute overflow-hidden rounded-sm"
-          style={{ top: "13%", left: "13%", right: "13%", height: "36%" }}
+          className="absolute overflow-hidden"
+          style={{ top: "20%", left: "25%", right: "25%", height: "40%" }}
         >
           <Image
             src={member.second_image}
             alt={member.full_name}
             fill
             sizes="260px"
-            className="object-cover"
+            className="object-cover scale-130"
           />
         </div>
 
