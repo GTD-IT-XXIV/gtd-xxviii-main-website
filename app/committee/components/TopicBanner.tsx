@@ -97,7 +97,7 @@ export default function TopicBanner({
             {/* ── Group photo (behind the frame) ── */}
             <div
               className="absolute overflow-hidden rounded-lg"
-              style={{ top: "3%", left: "5%", right: "5%", bottom: "28%" }}
+              style={{ top: "8%", left: "19%", right: "17%", bottom: "28%" }}
             >
               <Image
                 src={topic.group_image}

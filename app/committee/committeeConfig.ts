@@ -64,7 +64,7 @@ export const committeeTopics: CommitteeTopic[] = [
   },
   {
     title: "BFM",
-    group_image: "/images/finn.png",
+    group_image: "/images/committee/group/ppit.jpg",
     members: [
   {
     name: "Audria",
