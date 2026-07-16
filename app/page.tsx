@@ -189,7 +189,7 @@ export default function Home() {
     setFinnPos({ x: loc.x + 3,   y: loc.y });
     setJakePos({ x: loc.x - 3.5, y: loc.y });
   }
-
+  
   const selectedLoc = locations.find((l) => l.id === selectedId);
 
   // ── Derived animation values ──
@@ -278,7 +278,7 @@ export default function Home() {
   // The remaining 0.85→1.0 scroll travel is reserved entirely for
   // the cloud reveal — the mountain is stationary while clouds part.
   const pathProgress    = clamp(climbProgress / 0.85, 0, 1);
-  const pathPanPercent  = lerp(100, 4, pathProgress);
+  const pathPanPercent  = lerp(100, 0, pathProgress) - 10;
 
   // ── Clouds pan in sync with the path, then freeze with it ──
   const cloudPanPercent = pathPanPercent;
@@ -291,6 +291,8 @@ export default function Home() {
     : 1 - Math.pow(-2 * cloudSplitRaw + 2, 2) / 2;
   const cloudLeftX  = lerp(0, -110, cloudSplitEased);
   const cloudRightX = lerp(0,  110, cloudSplitEased);
+  const cloudFadeEased = clamp((cloudSplitRaw - 0.15) / 0.85, 0, 1); // starts fading a bit later than the split
+  const cloudOpacity   = lerp(1, 0, cloudFadeEased);
 
   // Fade the climb backdrop (torch/darkness/sky) as the clouds part…
   const climbSceneOpacity = lerp(1, 0, clamp((climbProgress - 0.85) / 0.15, 0, 1));
@@ -397,12 +399,23 @@ export default function Home() {
                   );
                 })}
                 <div className="absolute z-10 pointer-events-none"
-                  style={{ left: `${finnPos.x}%`, top: `${finnPos.y}%`, transform: "translate(-50%, -100%)", transition: SPRING }}>
-                  <Image src="/images/finn.png" alt="Finn" width={26} height={36} style={{ objectFit: "contain" }} />
-                </div>
-                <div className="absolute z-10 pointer-events-none"
-                  style={{ left: `${jakePos.x}%`, top: `${jakePos.y}%`, transform: "translate(-50%, -100%)", transition: SPRING }}>
-                  <Image src="/images/jake.png" alt="Jake" width={22} height={28} unoptimized style={{ objectFit: "contain" }} />
+                  style={{
+                    left: `${climbersLeft}%`,
+                    top: `${climbersTop}%`,
+                    transform: `translate(-50%, -100%) scaleX(${facingRight ? 1 : -1})`,
+                    opacity: charOpacity,
+                    transition: traveled ? "left 0.75s cubic-bezier(0.34,1.5,0.64,1), top 0.75s cubic-bezier(0.34,1.5,0.64,1)"
+                      : landing ? "left 0.2s linear, top 0.2s linear" : undefined,
+                  }}>
+                  <Image
+                    src={`/images/${spriteDir}/frame_${spriteFrame}.png`}
+                    alt="Finn and Jake"
+                    width={44}
+                    height={48}
+                    unoptimized
+                    priority
+                    style={{ objectFit: "contain", imageRendering: "pixelated" }}
+                  />
                 </div>
               </div>
               <div className="bg-slate-950/90 divide-y divide-white/5">
@@ -432,7 +445,8 @@ export default function Home() {
           style={{
             zIndex: 3,
             transform: `translateX(${cloudLeftX}%)`,
-            willChange: "transform",
+            opacity: cloudOpacity,
+            willChange: "transform, opacity",
           }}
         >
           <Image
@@ -444,13 +458,14 @@ export default function Home() {
           />
         </div>
 
-        {/* ── z:4 — Right cloud: pans with path, then slides off-screen right ── */}
+        {/* ── z:4 — Right cloud: pans with path, then slides + fades off-screen right ── */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
             zIndex: 4,
             transform: `translateX(${cloudRightX}%)`,
-            willChange: "transform",
+            opacity: cloudOpacity,
+            willChange: "transform, opacity",
           }}
         >
           <Image
@@ -462,18 +477,21 @@ export default function Home() {
           />
         </div>
 
-        {/* ── z:5 — path.png — always visible, peak stays at 4% ── */}
-        <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 5 }}>
-          <Image
-            src="/images/path_v2.png"
-            alt="A winding jungle path climbing from a campfire at its base to a glowing plateau"
-            fill
-            priority
-            className="object-cover"
-            style={{ objectPosition: `center ${pathPanPercent}%` }}
-          />
-        </div>
 
+        {/* ── z:5 — path.png — always visible, peak stays at 4% ── */}
+        <div className="absolute inset-0 pointer-events-none"
+          style={{ zIndex: 5, opacity: climbSceneOpacity }}>
+          <div className="absolute inset-y-0 -left-1/2 -right-1/2 md:left-0 md:right-0">
+            <Image
+              src="/images/path_v2.png"
+              alt="A winding jungle path climbing from a campfire at its base to a glowing plateau"
+              fill
+              priority
+              className="object-cover"
+              style={{ objectPosition: `center ${pathPanPercent}%` }}
+            />
+          </div>
+        </div>
         {/* ── z:6 — Sky glow ── */}
         <div className="absolute inset-0 pointer-events-none"
           style={{
@@ -508,7 +526,7 @@ export default function Home() {
              the map. Stays fully visible through the reveal (charOpacity), and
              sits above the map (z:10 > map z:2) once landed. Desktop cinematic
              only — mobile uses its own map card with location markers. ── */}
-        <div className="absolute pointer-events-none hidden md:block"
+        <div className="absolute pointer-events-none"
           style={{
             zIndex: 10,
             left: `${climbersLeft}%`,
