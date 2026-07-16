@@ -17,16 +17,13 @@ function windowOpacity(p: number, start: number, end: number, fade = 0.045) {
 
 const TRAIL_WAYPOINTS: { p: number; x: number }[] = [
   { p: 0.00, x: 50 },
-  { p: 0.05, x: 38 },
-  { p: 0.17, x: 58 },
-  { p: 0.28, x: 40 },
-  { p: 0.37, x: 61 },
-  { p: 0.46, x: 47 },
-  { p: 0.53, x: 61 },
-  { p: 0.58, x: 46 },
-  { p: 0.60, x: 53 },
-  { p: 0.62, x: 48 },
-  { p: 0.63, x: 50 },
+  { p: 0.02, x: 45 },
+  { p: 0.11, x: 58 },
+  { p: 0.21, x: 40 },
+  { p: 0.29, x: 61 },
+  { p: 0.38, x: 47 },
+  { p: 0.44, x: 61 },
+  { p: 0.50, x: 50 },
   { p: 1.00, x: 50 },
 ];
 
@@ -50,14 +47,14 @@ const STORYLINE = [
 ];
 
 const locations = [
-  { id: 1, name: "Dulcia",      x: 42, y: 36, color: "amber",  emoji: "🏜️", href: "/" },
-  { id: 2, name: "Ignara",      x: 62, y: 36, color: "red",    emoji: "🌋", href: "/" },
-  { id: 3, name: "Avelis",      x: 42, y: 65, color: "cyan",   emoji: "🌊", href: "/" },
-  { id: 4, name: "Wygrove",     x: 62, y: 70, color: "green",  emoji: "🌿", href: "/" },
-  { id: 5, name: "Committee",   x: 15, y: 34, color: "purple", emoji: "🎪", href: "/committee" },
-  { id: 6, name: "About Us",    x: 85, y: 34, color: "slate",  emoji: "💻", href: "/about" },
-  { id: 7, name: "Leaderboard", x: 88, y: 75, color: "yellow", emoji: "🏆", href: "/leaderboard" },
-  { id: 8, name: "Event",       x: 12, y: 65, color: "teal",   emoji: "🎉", href: "/event" },
+  { id: 1, name: "Dulcia",      x: 42, y: 42, color: "amber",  emoji: "🏜️", href: "/" },
+  { id: 2, name: "Ignara",      x: 62, y: 42, color: "red",    emoji: "🌋", href: "/" },
+  { id: 3, name: "Avelis",      x: 44, y: 75, color: "cyan",   emoji: "🌊", href: "/" },
+  { id: 4, name: "Wygrove",     x: 59, y: 75, color: "green",  emoji: "🌿", href: "/" },
+  { id: 5, name: "Committee",   x: 22, y: 38, color: "purple", emoji: "🎪", href: "/committee" },
+  { id: 6, name: "About Us",    x: 83, y: 40, color: "slate",  emoji: "💻", href: "/about" },
+  { id: 7, name: "Leaderboard", x: 85, y: 80, color: "yellow", emoji: "🏆", href: "/leaderboard" },
+  { id: 8, name: "Events",      x: 20, y: 72, color: "teal",   emoji: "🎉", href: "/event" },
 ];
 
 type CharPos = { x: number; y: number };
@@ -139,6 +136,15 @@ export default function Home() {
   const router = useRouter();
   const [flight, setFlight] = useState<Flight | null>(null);
   const flightRaf = useRef<number | null>(null);
+
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
 
   useEffect(() => {
     let idleTimer: ReturnType<typeof setTimeout>;
@@ -232,6 +238,23 @@ export default function Home() {
     setSelectedId(loc.id);
     setFinnPos({ x: loc.x + 3,   y: loc.y });
     setJakePos({ x: loc.x - 3.5, y: loc.y });
+  }
+
+  function handleMobileSelect(e: React.MouseEvent, loc: (typeof locations)[0]) {
+    if (loc.href === "/") {
+      // No dedicated page for this island — just select it, don't navigate/reload
+      e.preventDefault();
+    }
+    handleSelect(loc);
+  }
+
+  function resetStoryline() {
+    setClimbDone(false);
+    setClimbProgress(0);
+    setSelectedId(null);
+    setFinnPos(IDLE);
+    setJakePos(IDLE);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   // Desktop: fly Finn from wherever he's standing to the island under Jake's
@@ -416,6 +439,12 @@ export default function Home() {
     { side: "right", top: lerp(82, 16, 0.745) },
   ];
 
+  const storylineLayoutMobile: { top: number }[] = [
+    { top: 16 },
+    { top: 44 },
+    { top: 72 },
+  ];
+
   const introHintOpacity = lerp(1, 0, Math.min(climbProgress / 0.08, 1));
 
   // ── Path pan ──
@@ -447,6 +476,12 @@ export default function Home() {
 
   // Map becomes interactive once clouds are fully gone
   const mapInteractive = cloudSplitEased >= 0.999;
+
+  const globalSpriteOpacity = climbDone && isMobile ? 0 : charOpacity;
+  const posTransition = flight ? undefined
+    : traveled ? "left 0.75s cubic-bezier(0.34,1.5,0.64,1), top 0.75s cubic-bezier(0.34,1.5,0.64,1)"
+    : landing ? "left 0.2s linear, top 0.2s linear" : undefined;
+  const globalSpriteTransition = [posTransition, "opacity 0.5s ease"].filter(Boolean).join(", ");
 
   return (
     <>
@@ -480,7 +515,7 @@ export default function Home() {
 
             {/* Title */}
             <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10 text-center pointer-events-none">
-              <h1 className="text-4xl font-bold tracking-widest text-white uppercase"
+              <h1 className="text-2xl font-bold tracking-widest text-white uppercase"
                 style={{ textShadow: "0 2px 12px rgba(0,0,0,0.55)" }}>
                 GTD XXVIII
               </h1>
@@ -515,10 +550,11 @@ export default function Home() {
           </div>
 
           {/* ═══════════════════ MOBILE MAP ═══════════════════ */}
-          <div className="md:hidden h-full w-full overflow-y-auto"
+          <div className="md:hidden h-full w-full flex flex-col"
             style={{ background: "radial-gradient(ellipse at 50% 30%, #93c5fd 0%, #3b82f6 40%, #1d4ed8 100%)" }}>
-            <div className="sticky top-0 z-20 text-center pt-6 pb-3 px-4"
-              style={{ background: "linear-gradient(to bottom, #1d4ed8 75%, transparent)" }}>
+
+            {/* Title — fixed, doesn't scroll */}
+            <div className="flex-shrink-0 text-center pt-6 pb-3 px-4">
               <h1 className="text-3xl font-bold tracking-widest text-white uppercase"
                 style={{ textShadow: "0 2px 8px rgba(0,0,0,0.5)" }}>GTD XXVIII</h1>
               <h2 className="text-5xl font-bold tracking-widest text-white uppercase mt-1"
@@ -527,7 +563,9 @@ export default function Home() {
                 {selectedLoc ? `✈ Traveling to ${selectedLoc.name}…` : "Choose your destination"}
               </p>
             </div>
-            <div className="mx-4 mt-1 mb-6 rounded-3xl overflow-hidden"
+
+            {/* Map card — fixed, doesn't scroll */}
+            <div className="flex-shrink-0 mx-4 mt-1 mb-3 rounded-3xl overflow-hidden"
               style={{ boxShadow: "0 0 30px 4px rgba(147,197,253,0.3), 0 8px 32px rgba(0,0,0,0.5)" }}>
               <div className="relative aspect-video">
                 <Image src="/images/map.png" alt="World Map" fill className="object-cover" />
@@ -563,23 +601,26 @@ export default function Home() {
                   />
                 </div>
               </div>
-              <div className="bg-slate-950/90 divide-y divide-white/5">
-                {locations.map((loc) => {
-                  const c = colorMap[loc.color];
-                  const active = selectedId === loc.id;
-                  return (
-                    <button key={loc.id} onClick={() => handleSelect(loc)}
-                      className={`w-full flex items-center gap-3 px-4 py-3 transition active:scale-[0.98] ${active ? "bg-white/5" : ""}`}>
-                      <span className={`flex-shrink-0 w-9 h-9 rounded-lg ${c.btn} flex items-center justify-center text-base shadow`}>
-                        {loc.emoji}
-                      </span>
-                      <span className="text-white text-sm font-medium">{loc.name}</span>
-                      {active && <span className="w-2.5 h-2.5 rounded-full bg-white animate-pulse" />}
-                      <span className="ml-auto text-white/40 text-lg">→</span>
-                    </button>
-                  );
-                })}
-              </div>
+            </div>
+
+            {/* Location list — the only scrollable region */}
+            <div className="flex-1 min-h-0 overflow-y-auto mx-4 mb-4 rounded-3xl bg-slate-950/90 divide-y divide-white/5"
+              style={{ boxShadow: "0 8px 32px rgba(0,0,0,0.5)" }}>
+              {locations.map((loc) => {
+                const c = colorMap[loc.color];
+                const active = selectedId === loc.id;
+                return (
+                  <a key={loc.id} href={loc.href} onClick={(e) => handleMobileSelect(e, loc)}
+                    className={`w-full flex items-center gap-3 px-4 py-3 transition active:scale-[0.98] ${active ? "bg-white/5" : ""}`}>
+                    <span className={`flex-shrink-0 w-9 h-9 rounded-lg ${c.btn} flex items-center justify-center text-base shadow`}>
+                      {loc.emoji}
+                    </span>
+                    <span className="text-white text-sm font-medium">{loc.name}</span>
+                    {active && <span className="w-2.5 h-2.5 rounded-full bg-white animate-pulse" />}
+                    <span className="ml-auto text-white/40 text-lg">→</span>
+                  </a>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -667,45 +708,36 @@ export default function Home() {
             opacity: climbSceneOpacity > 0 ? darknessOpacity * climbSceneOpacity : 0,
           }} />
 
-        {/* ── z:10 — Finn carrying Jake — walks up, jumps off the cliff, lands on
-             the map. Stays fully visible through the reveal (charOpacity), and
-             sits above the map (z:10 > map z:2) once landed. Desktop cinematic
-             only — mobile uses its own map card with location markers. ── */}
-        <div className="absolute pointer-events-none"
-          style={{
-            zIndex: 10,
-            left: `${climbersLeft}%`,
-            top: `${climbersTop}%`,
-            // The facing flip is folded into the x-scale: emitting a separate
-            // scale() alongside scaleX(-1) would cancel the zoom when flying left.
-            transform: `translate(-50%, -100%) scale(${(facingRight ? 1 : -1) * flightScale}, ${flightScale})`,
-            transformOrigin: "bottom center",
-            opacity: charOpacity,
-            // While flying, the rAF tween owns left/top — a CSS transition here
-            // would lag and fight it.
-            transition: flight ? undefined
-              : traveled ? "left 0.75s cubic-bezier(0.34,1.5,0.64,1), top 0.75s cubic-bezier(0.34,1.5,0.64,1)"
-              : landing ? "left 0.2s linear, top 0.2s linear" : undefined,
-          }}>
-          <Image
-            src={`/images/${spriteDir}/frame_${spriteFrame}.png`}
-            alt="Finn and Jake climbing"
-            width={spriteSize.w}
-            height={spriteSize.h}
-            unoptimized
-            priority
-            style={{ objectFit: "contain", imageRendering: "pixelated" }}
-          />
-        </div>
+        {/* ── z:10 — Finn carrying Jake ── */}
+      <div className="absolute pointer-events-none"
+        style={{
+          zIndex: 10,
+          left: `${climbersLeft}%`,
+          top: `${climbersTop}%`,
+          transform: `translate(-50%, -100%) scale(${(facingRight ? 1 : -1) * flightScale}, ${flightScale})`,
+          transformOrigin: "bottom center",
+          opacity: globalSpriteOpacity,
+          transition: globalSpriteTransition,
+        }}>
+        <Image
+          src={`/images/${spriteDir}/frame_${spriteFrame}.png`}
+          alt="Finn and Jake climbing"
+          width={spriteSize.w}
+          height={spriteSize.h}
+          unoptimized
+          priority
+          style={{ objectFit: "contain", imageRendering: "pixelated" }}
+        />
+      </div>
 
-        {/* ── z:20 — Storyline textboxes ── */}
+        {/* ── z:20 — Storyline (desktop): alternating left/right ── */}
         {STORYLINE.map((line, i) => {
           const layout = storylineLayout[i];
           const isRight = layout.side === "right";
           return (
             <div key={i}
-              className={`absolute pointer-events-none w-[72%] sm:w-[58%] md:w-[34%] ${
-                isRight ? "right-[4%] md:right-[7%] text-right" : "left-[4%] md:left-[7%] text-left"
+              className={`hidden md:block absolute pointer-events-none w-[34%] ${
+                isRight ? "right-[7%] text-right" : "left-[7%] text-left"
               }`}
               style={{
                 zIndex: 20,
@@ -713,7 +745,7 @@ export default function Home() {
                 opacity: storylineOpacities[i],
                 transform: `translate(${isRight ? lerp(28, 0, storylineOpacities[i]) : lerp(-28, 0, storylineOpacities[i])}px, -50%)`,
               }}>
-              <p className="inline-block text-amber-50/95 text-sm md:text-base leading-relaxed tracking-wide bg-black/35 backdrop-blur-sm border border-white/10 rounded-2xl px-6 py-5"
+              <p className="inline-block text-amber-50/95 text-base leading-relaxed tracking-wide bg-black/35 backdrop-blur-sm border border-white/10 rounded-2xl px-6 py-5"
                 style={{ fontFamily: "AdventureTime, UncialAntiqua, serif", textShadow: "0 2px 10px rgba(0,0,0,0.6)" }}>
                 {line}
               </p>
@@ -721,6 +753,25 @@ export default function Home() {
           );
         })}
 
+        {/* ── z:20 — Storyline (mobile): centered, slides up on fade-in ── */}
+        {STORYLINE.map((line, i) => {
+          const layout = storylineLayoutMobile[i];
+          return (
+            <div key={`m-${i}`}
+              className="md:hidden absolute pointer-events-none left-1/2 w-[82%] text-center"
+              style={{
+                zIndex: 20,
+                top: `${layout.top}%`,
+                opacity: storylineOpacities[i],
+                transform: `translate(-50%, ${lerp(16, -50, 1) + (50 - lerp(16, 0, storylineOpacities[i]))}px)`,
+              }}>
+              <p className="inline-block text-amber-50/95 text-sm leading-relaxed tracking-wide bg-black/35 backdrop-blur-sm border border-white/10 rounded-2xl px-5 py-4"
+                style={{ fontFamily: "AdventureTime, UncialAntiqua, serif", textShadow: "0 2px 10px rgba(0,0,0,0.6)" }}>
+                {line}
+              </p>
+            </div>
+          );
+        })}
         {/* ── z:20 — Scroll hint ── */}
         <div className="absolute inset-x-0 top-10 text-center pointer-events-none"
           style={{ zIndex: 20, opacity: introHintOpacity }}>
