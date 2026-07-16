@@ -39,7 +39,7 @@ const generateMembers = (count: number): CommitteeMember[] =>
 export const committeeTopics: CommitteeTopic[] = [
   {
     title: "TOPS n MC",
-    group_image: "/images/finn.png",
+    group_image: "/images/committee/MC/TOPS/TOPS.jpg",
     members: [
   {
     name: "Sheryn",
@@ -118,8 +118,8 @@ export const committeeTopics: CommitteeTopic[] = [
     full_name: "Alexander Sutanto Herlington",
     year_course: "",
     og: "",
-    first_image: "/images/committee/mc/polog/ALEXANDER1.jpg",
-    second_image: "/images/committee/mc/polog/ALEXANDER2.jpg",
+    first_image: "/images/committee/MC/polog/ALEXANDER1.jpg",
+    second_image: "/images/committee/MC/polog/ALEXANDER2.jpg",
   },
   {
     name: "Chloe",
@@ -158,16 +158,16 @@ export const committeeTopics: CommitteeTopic[] = [
     full_name: "Michael Angelo",
     year_course: "",
     og: "",
-    first_image: "/images/committee/mc/polog//MICHAEL1.jpg",
-    second_image: "/images/committee/mc/polog//MICHAEL2.jpg",
+    first_image: "/images/committee/MC/POLOG/MICHAEL1.jpg",
+    second_image: "/images/committee/MC/POLOG/MICHAEL2.jpg",
   },
   {
     name: "Nickholas",
     full_name: "Nickholas Jamie Jorrey",
     year_course: "",
     og: "",
-    first_image: "/images/committee/mc/polog//NICKHOLAS1.jpg",
-    second_image: "/images/committee/mc/polog/NICKHOLAS2.jpg",
+    first_image: "/images/committee/MC/POLOG/NICKHOLAS1.jpg",
+    second_image: "/images/committee/MC/POLOG/NICKHOLAS2.jpg",
   },
   {
     name: "Anastasia",
