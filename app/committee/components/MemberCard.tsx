@@ -132,7 +132,7 @@ export function ExpandedCard({ member, index, topicIndex, onClose }: ExpandedCar
         {/* ── Detail text (below photo, in parchment area) ── */}
         <div
           className="absolute flex flex-col items-center justify-center gap-1"
-          style={{ top: "52%", left: "13%", right: "13%", bottom: "24%" }}
+          style={{ top: "65%", left: "13%", right: "13%", bottom: "30%" }}
         >
           <span className="expanded-detail-text text-stone-900 text-base sm:text-lg md:text-lg font-bold text-center leading-tight">
             {member.full_name}
