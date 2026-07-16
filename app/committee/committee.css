@@ -1,0 +1,137 @@
+/* ── Committee Page — Custom Styles & Animations ──────────────── */
+
+/* ── Sparkle shimmer on card frames ── */
+@keyframes shimmer {
+  0%   { opacity: 0; transform: scale(0) rotate(0deg); }
+  50%  { opacity: 1; transform: scale(1) rotate(180deg); }
+  100% { opacity: 0; transform: scale(0) rotate(360deg); }
+}
+
+.sparkle-container {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 15;
+  overflow: hidden;
+}
+
+.sparkle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.9) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: shimmer 2.4s ease-in-out infinite;
+}
+
+.sparkle:nth-child(1) { top: 8%; left: 5%; animation-delay: 0s; }
+.sparkle:nth-child(2) { top: 15%; right: 6%; animation-delay: 0.6s; }
+.sparkle:nth-child(3) { bottom: 25%; left: 4%; animation-delay: 1.2s; }
+.sparkle:nth-child(4) { bottom: 18%; right: 5%; animation-delay: 0.3s; }
+.sparkle:nth-child(5) { top: 50%; left: 2%; animation-delay: 1.8s; }
+.sparkle:nth-child(6) { top: 45%; right: 3%; animation-delay: 0.9s; }
+
+/* ── Floating ambient particles ── */
+@keyframes float-up {
+  0%   { transform: translateY(0) translateX(0) scale(0); opacity: 0; }
+  20%  { opacity: 0.8; transform: translateY(-20px) translateX(5px) scale(1); }
+  80%  { opacity: 0.4; }
+  100% { transform: translateY(-120px) translateX(-10px) scale(0.3); opacity: 0; }
+}
+
+.ambient-particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(255, 223, 120, 0.6);
+  pointer-events: none;
+  animation: float-up 4s ease-out infinite;
+}
+
+/* ── Card golden glow on hover ── */
+@keyframes golden-pulse {
+  0%, 100% { box-shadow: 0 0 15px 2px rgba(255, 200, 60, 0.15); }
+  50%      { box-shadow: 0 0 30px 8px rgba(255, 200, 60, 0.35); }
+}
+
+.card-glow-hover {
+  transition: filter 0.3s ease;
+}
+
+.card-glow-hover:hover {
+  animation: golden-pulse 2s ease-in-out infinite;
+  filter: brightness(1.08);
+}
+
+/* ── Topic title text styling ── */
+.topic-title {
+  font-family: "AdventureTime", "UncialAntiqua", serif;
+  text-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.6),
+    0 0 20px rgba(255, 200, 60, 0.3);
+  letter-spacing: 0.12em;
+}
+
+/* ── Member name on card banner ── */
+.card-banner-text {
+  font-family: "AdventureTime", "UncialAntiqua", serif;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+  letter-spacing: 0.08em;
+}
+
+/* ── Expanded card detail text ── */
+.expanded-detail-text {
+  font-family: "AdventureTime", "UncialAntiqua", serif;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* ── Arrow buttons ── */
+.topic-arrow {
+  transition: transform 0.2s ease, filter 0.2s ease;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
+  cursor: pointer;
+}
+
+.topic-arrow:hover {
+  transform: scale(1.2);
+  filter: drop-shadow(0 4px 12px rgba(255, 200, 60, 0.5));
+}
+
+.topic-arrow:active {
+  transform: scale(0.95);
+}
+
+/* ── Home button ── */
+.home-button {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+}
+
+.home-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* ── Backdrop overlay ── */
+.card-backdrop {
+  backdrop-filter: blur(4px);
+}
+
+/* ── Scrollbar styling for the page ── */
+.committee-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.committee-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.committee-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 200, 60, 0.3);
+  border-radius: 3px;
+}
+
+.committee-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 200, 60, 0.5);
+}

@@ -1,41 +1,10 @@
-import Image from "next/image";
-import Link from "next/link";
+import CommitteeClient from "./CommitteeClient";
 
-export default function Page() {
-  return (
-    <div style={{ position: "relative", height: "100vh", overflow: "hidden" }}>
-      <Image
-        src="/images/committee_bg.png"
-        alt=""
-        fill
-        priority
-        style={{
-          objectFit: "cover",
-          objectPosition: "top center",
-        }}
-      />
-      <div style={{
-        position: "relative",
-        zIndex: 1,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        height: "100%",
-      }}>
-        <Link href="/?map=1">
-          <button style={{
-            padding: "12px 28px",
-            fontSize: "16px",
-            backgroundColor: "#fff",
-            color: "#000",
-            border: "none",
-            borderRadius: "8px",
-            cursor: "pointer",
-          }}>
-            ← Back to Home
-          </button>
-        </Link>
-      </div>
-    </div>
-  );
+export const metadata = {
+  title: "Committee | PINTU Get Together Day",
+  description: "Meet the committee members behind PINTU Get Together Day XXVIII — AETERNA.",
+};
+
+export default function CommitteePage() {
+  return <CommitteeClient />;
 }
