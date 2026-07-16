@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
+import { useState, useEffect, useRef, useCallback } from "react";
 import SponsorsSection from "@/app/_components/SponsorsSection";
 
 const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
@@ -61,6 +62,9 @@ const locations = [
 
 type CharPos = { x: number; y: number };
 const IDLE: CharPos = { x: 52, y: 52 };
+// Where the sprite lands on the map (a touch left + lower than dead centre).
+// Also the launch point for the first umbrella flight.
+const MAP_CENTER: CharPos = { x: 51, y: 55 };
 
 const colorMap: Record<string, { btn: string; ring: string; badge: string; border: string }> = {
   amber:  { btn: "bg-amber-500/90 hover:bg-amber-400",   ring: "bg-amber-400/40",  badge: "bg-amber-100 text-amber-800",   border: "border-amber-400"  },
@@ -88,6 +92,39 @@ const IDLE_DELAY  = 150;  // ms of no-scroll before switching walk → idle
 const JUMP_FRAMES = 10;   // number of frames in public/images/finn_jump/
 const LAND_FRAMES = 11;   // number of frames in public/images/finn_land/
 
+// ── Umbrella flight: centre → outer island, Jake as the parachute ──
+// The 12 frames split into three phases:
+//   0–4   Jake unfurls into the canopy      (play once)
+//   5–8   canopy open, Finn suspended       (loop while airborne)
+//   9–11  canopy folds, Jake drops down     (play once)
+const UMBRELLA_FRAMES     = 12;
+const UMBRELLA_DEPLOY_END = 5;    // first frame of the airborne loop
+const UMBRELLA_FLIGHT_END = 9;    // first frame of the retract
+const UMBRELLA_SWAYS      = 1.5;  // canopy cycles across the airborne window
+const FLIGHT_MS         = 1500;   // total centre → island duration
+const FLIGHT_DEPLOY_T   = 0.2;    // fraction of the flight spent unfurling
+const FLIGHT_RETRACT_T  = 0.8;    // fraction after which the canopy folds
+const FLIGHT_ARC        = 14;     // apex height above the straight line, in viewport %
+const FLIGHT_PEAK_SCALE = 1.6;    // character zoom at mid-flight (map never scales)
+
+// Per-animation render size. Finn's body is the same size in every set; the
+// umbrella frames are 78px tall vs 44px because Jake's canopy sits above his
+// head, so they need proportionally more box or `contain` would shrink Finn.
+const SPRITE_SIZE: Record<string, { w: number; h: number }> = {
+  finn_idle:     { w: 64, h: 70 },
+  finn_walk:     { w: 64, h: 70 },
+  finn_jump:     { w: 64, h: 70 },
+  finn_land:     { w: 64, h: 70 },
+  finn_umbrella: { w: 64, h: 124 },   // 78/44 × 70 ≈ 124
+};
+
+// Parabola peaking at 1 when t=0.5, 0 at both ends — drives arc height and zoom.
+const arc = (t: number) => 4 * t * (1 - t);
+const easeInOutQuad = (t: number) =>
+  t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+
+type Flight = { loc: (typeof locations)[0]; from: CharPos; t: number };
+
 export default function Home() {
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [finnPos, setFinnPos]       = useState<CharPos>(IDLE);
@@ -98,6 +135,10 @@ export default function Home() {
   const [climbDone, setClimbDone] = useState(false);
   const [isScrolling, setIsScrolling] = useState(false);
   const [idleFrame, setIdleFrame] = useState(0);
+
+  const router = useRouter();
+  const [flight, setFlight] = useState<Flight | null>(null);
+  const flightRaf = useRef<number | null>(null);
 
   useEffect(() => {
     let idleTimer: ReturnType<typeof setTimeout>;
@@ -164,6 +205,7 @@ export default function Home() {
       ["finn_idle", IDLE_FRAMES],
       ["finn_jump", JUMP_FRAMES],
       ["finn_land", LAND_FRAMES],
+      ["finn_umbrella", UMBRELLA_FRAMES],
     ];
     for (const [dir, n] of sets) {
       for (let i = 0; i < n; i++) {
@@ -184,12 +226,74 @@ export default function Home() {
     return () => clearInterval(id);
   }, [isScrolling]);
 
+  // Mobile map + the "Traveling to …" title read from this; keep it for both
+  // the flying and non-flying paths.
   function handleSelect(loc: (typeof locations)[0]) {
     setSelectedId(loc.id);
     setFinnPos({ x: loc.x + 3,   y: loc.y });
     setJakePos({ x: loc.x - 3.5, y: loc.y });
   }
-  
+
+  // Desktop: fly Finn from wherever he's standing to the island under Jake's
+  // umbrella, then open the page. The pin is an <a>, so without the
+  // preventDefault below the browser would navigate instantly and the flight
+  // would never be seen.
+  const startFlight = useCallback(
+    (e: React.MouseEvent, loc: (typeof locations)[0]) => {
+      // Islands 1–4 have href:"/" and no page of their own — selecting them
+      // shouldn't reload the map.
+      if (loc.href === "/") {
+        e.preventDefault();
+        handleSelect(loc);
+        return;
+      }
+
+      // Let modified clicks (new tab/window) behave natively.
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+
+      e.preventDefault();
+      if (flight) return;   // a flight is already running — ignore double-clicks
+
+      handleSelect(loc);
+
+      const reduced =
+        typeof window !== "undefined" &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduced) {
+        router.push(loc.href);
+        return;
+      }
+
+      // Launch from Finn's current spot: map centre on the first trip, or the
+      // island he's already standing on.
+      const current = locations.find((l) => l.id === selectedId);
+      const from: CharPos = current ? { x: current.x, y: current.y } : MAP_CENTER;
+
+      const start = performance.now();
+      setFlight({ loc, from, t: 0 });
+
+      const step = (now: number) => {
+        const t = clamp((now - start) / FLIGHT_MS, 0, 1);
+        setFlight({ loc, from, t });
+        if (t < 1) {
+          flightRaf.current = requestAnimationFrame(step);
+        } else {
+          flightRaf.current = null;
+          router.push(loc.href);
+        }
+      };
+      flightRaf.current = requestAnimationFrame(step);
+    },
+    [flight, selectedId, router],
+  );
+
+  // Stop the tween if the page unmounts mid-flight (e.g. the router.push lands).
+  useEffect(() => {
+    return () => {
+      if (flightRaf.current !== null) cancelAnimationFrame(flightRaf.current);
+    };
+  }, []);
+
   const selectedLoc = locations.find((l) => l.id === selectedId);
 
   // ── Derived animation values ──
@@ -203,7 +307,6 @@ export default function Home() {
   const WALK_END    = 0.63;   // finish climbing, launch off the cliff
   const FALL_END    = 0.97;   // reach map centre (clouds essentially open by now)
   const cliffTop    = 40;     // how high they climb before jumping (% from top)
-  const MAP_CENTER  = { x: 51, y: 55 };   // where the sprite lands on the map (a touch left + lower than dead centre)
 
   const walking = climbProgress < WALK_END;
   const landing = climbProgress >= FALL_END;              // crouch/settle at centre
@@ -225,10 +328,27 @@ export default function Home() {
   // Once the climb is finished and a region is picked, the landed sprite travels
   // to that region's pin (centred on it).
   const travelTarget = climbDone ? locations.find((l) => l.id === selectedId) : undefined;
-  const climbersTop  = travelTarget ? travelTarget.y
+
+  // ── Umbrella flight ──
+  // Position eases so the launch and landing settle, but the zoom rides raw t
+  // so its peak stays pinned to the apex of the arc.
+  const flightPos = flight
+    ? (() => {
+        const e = easeInOutQuad(flight.t);
+        return {
+          x: lerp(flight.from.x, flight.loc.x, e),
+          y: lerp(flight.from.y, flight.loc.y, e) - FLIGHT_ARC * arc(e),
+        };
+      })()
+    : null;
+  const flightScale = flight ? 1 + (FLIGHT_PEAK_SCALE - 1) * arc(flight.t) : 1;
+
+  const climbersTop  = flightPos ? flightPos.y
+    : travelTarget ? travelTarget.y
     : walking ? walkTop
     : lerp(cliffTop, MAP_CENTER.y, flightEased);
-  const climbersLeft = travelTarget ? travelTarget.x
+  const climbersLeft = flightPos ? flightPos.x
+    : travelTarget ? travelTarget.x
     : walking ? trailX(climbProgress)
     : lerp(trailX(WALK_END), MAP_CENTER.x, flightEased);
   const traveled = travelTarget !== undefined;
@@ -248,15 +368,40 @@ export default function Home() {
     Math.floor(clamp((climbProgress - FALL_END) / (1 - FALL_END), 0, 1) * LAND_FRAMES),
   );
 
+  // Umbrella: unfurl (0–4, once) → airborne (5–8, looped) → fold (9–11, once).
+  const umbrellaFrame = (() => {
+    if (!flight) return 0;
+    const t = flight.t;
+    if (t < FLIGHT_DEPLOY_T) {
+      const d = t / FLIGHT_DEPLOY_T;
+      return Math.min(UMBRELLA_DEPLOY_END - 1, Math.floor(d * UMBRELLA_DEPLOY_END));
+    }
+    if (t < FLIGHT_RETRACT_T) {
+      const loopLen = UMBRELLA_FLIGHT_END - UMBRELLA_DEPLOY_END;   // frames 5–8
+      const d = (t - FLIGHT_DEPLOY_T) / (FLIGHT_RETRACT_T - FLIGHT_DEPLOY_T);
+      // One and a half sways across the airborne window (~7 fps). Faster than
+      // this and the 4-frame cycle aliases into a visible stutter.
+      return UMBRELLA_DEPLOY_END + (Math.floor(d * loopLen * UMBRELLA_SWAYS) % loopLen);
+    }
+    const retractLen = UMBRELLA_FRAMES - UMBRELLA_FLIGHT_END;      // frames 9–11
+    const d = (t - FLIGHT_RETRACT_T) / (1 - FLIGHT_RETRACT_T);
+    return Math.min(UMBRELLA_FRAMES - 1, UMBRELLA_FLIGHT_END + Math.floor(d * retractLen));
+  })();
+
   let spriteDir: string, spriteFrame: number;
-  if (climbDone)    { spriteDir = "finn_idle"; spriteFrame = idleFrame; }   // landed — breathe at map centre
+  if (flight)       { spriteDir = "finn_umbrella"; spriteFrame = umbrellaFrame; }   // flying to an island
+  else if (climbDone)    { spriteDir = "finn_idle"; spriteFrame = idleFrame; }   // landed — breathe at map centre
   else if (landing) { spriteDir = "finn_land"; spriteFrame = landFrame; }
   else if (jumping) { spriteDir = "finn_jump"; spriteFrame = jumpFrame; }
   else if (showIdle){ spriteDir = "finn_idle"; spriteFrame = idleFrame; }
   else              { spriteDir = "finn_walk"; spriteFrame = walkFrame; }
+  const spriteSize = SPRITE_SIZE[spriteDir] ?? SPRITE_SIZE.finn_idle;
 
-  // Face the direction they're weaving up the path; keep that facing through the jump.
-  const facingRight = walking
+  // Face the direction they're weaving up the path; keep that facing through the
+  // jump. While flying, face the island being travelled to.
+  const facingRight = flight
+    ? flight.loc.x >= flight.from.x
+    : walking
     ? trailX(climbProgress) >= trailX(Math.max(0, climbProgress - 0.005))
     : trailX(WALK_END) >= trailX(WALK_END - 0.005);
 
@@ -355,7 +500,7 @@ export default function Home() {
                 const c = colorMap[loc.color];
                 const active = selectedId === loc.id;
                 return (
-                  <a key={loc.id} href={loc.href} onClick={() => handleSelect(loc)}
+                  <a key={loc.id} href={loc.href} onClick={(e) => startFlight(e, loc)}
                     className="absolute -translate-x-1/2 -translate-y-1/2 group flex flex-col items-center z-20"
                     style={{ left: `${loc.x}%`, top: `${loc.y}%` }}>
                     <span className={`absolute w-10 h-10 rounded-full ${c.ring} animate-ping ${active ? "opacity-100" : "opacity-60"}`} />
@@ -531,16 +676,22 @@ export default function Home() {
             zIndex: 10,
             left: `${climbersLeft}%`,
             top: `${climbersTop}%`,
-            transform: `translate(-50%, -100%) scaleX(${facingRight ? 1 : -1})`,
+            // The facing flip is folded into the x-scale: emitting a separate
+            // scale() alongside scaleX(-1) would cancel the zoom when flying left.
+            transform: `translate(-50%, -100%) scale(${(facingRight ? 1 : -1) * flightScale}, ${flightScale})`,
+            transformOrigin: "bottom center",
             opacity: charOpacity,
-            transition: traveled ? "left 0.75s cubic-bezier(0.34,1.5,0.64,1), top 0.75s cubic-bezier(0.34,1.5,0.64,1)"
+            // While flying, the rAF tween owns left/top — a CSS transition here
+            // would lag and fight it.
+            transition: flight ? undefined
+              : traveled ? "left 0.75s cubic-bezier(0.34,1.5,0.64,1), top 0.75s cubic-bezier(0.34,1.5,0.64,1)"
               : landing ? "left 0.2s linear, top 0.2s linear" : undefined,
           }}>
           <Image
             src={`/images/${spriteDir}/frame_${spriteFrame}.png`}
             alt="Finn and Jake climbing"
-            width={64}
-            height={70}
+            width={spriteSize.w}
+            height={spriteSize.h}
             unoptimized
             priority
             style={{ objectFit: "contain", imageRendering: "pixelated" }}
