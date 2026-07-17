@@ -61,20 +61,20 @@ const locations = [
 
 const HOUSE_DATA: Record<string, { name: string; gls: string[] }[]> = {
   Dulcia:  [
-    { name: "OG 1", gls: ["GL Name", "GL Name"] },
-    { name: "OG 2", gls: ["GL Name", "GL Name"] },
-  ],
-  Ignara:  [
-    { name: "OG 5", gls: ["GL Name", "GL Name"] },
-    { name: "OG 6", gls: ["GL Name", "GL Name"] },
+    { name: "Saturnitin", gls: ["GL Name", "GL Name"] },
+    { name: "Twoyul",     gls: ["GL Name", "GL Name"] },
   ],
   Avelis:  [
-    { name: "OG 3", gls: ["GL Name", "GL Name"] },
-    { name: "OG 4", gls: ["GL Name", "GL Name"] },
+    { name: "Tri-makasih", gls: ["GL Name", "GL Name"] },
+    { name: "Tetrice",     gls: ["GL Name", "GL Name"] },
+  ],
+  Ignara:  [
+    { name: "Pentalite",   gls: ["GL Name", "GL Name"] },
+    { name: "Kicau Namia", gls: ["GL Name", "GL Name"] },
   ],
   Wygrove: [
-    { name: "OG 7", gls: ["GL Name", "GL Name"] },
-    { name: "OG 8", gls: ["GL Name", "GL Name"] },
+    { name: "Setujuh",    gls: ["GL Name", "GL Name"] },
+    { name: "Delalapan",  gls: ["GL Name", "GL Name"] },
   ],
 };
 
