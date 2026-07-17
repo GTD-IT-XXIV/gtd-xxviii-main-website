@@ -272,7 +272,7 @@ export default function Home() {
                 const active = selectedId === loc.id;
                 return (
                   <a key={loc.id} href={loc.houseKey ? "#" : loc.href}
-                    onClick={(e) => { handleSelect(loc); if (loc.houseKey) { e.preventDefault(); setOpenHouse(loc.houseKey); } }}
+                    onClick={(e) => { handleSelect(loc); if (loc.houseKey) { e.preventDefault(); setTimeout(() => setOpenHouse(loc.houseKey), 800); } }}
                     className="absolute -translate-x-1/2 -translate-y-1/2 group flex flex-col items-center z-20"
                     style={{ left: `${loc.x}%`, top: `${loc.y}%` }}>
                     <span className={`absolute w-10 h-10 rounded-full ${c.ring} animate-ping ${active ? "opacity-100" : "opacity-60"}`} />
@@ -329,7 +329,7 @@ export default function Home() {
                   const c = colorMap[loc.color];
                   const active = selectedId === loc.id;
                   return (
-                    <button key={loc.id} onClick={() => { handleSelect(loc); if (loc.houseKey) setOpenHouse(loc.houseKey); }}
+                    <button key={loc.id} onClick={() => { handleSelect(loc); if (loc.houseKey) setTimeout(() => setOpenHouse(loc.houseKey), 800); }}
                       className={`w-full flex items-center gap-3 px-4 py-3 transition active:scale-[0.98] ${active ? "bg-white/5" : ""}`}>
                       <span className={`flex-shrink-0 w-9 h-9 rounded-lg ${c.btn} flex items-center justify-center text-base shadow`}>
                         {loc.emoji}
