@@ -70,11 +70,24 @@ export default function Page() {
       <div className="absolute inset-0 bg-black/25" />
 
       <Link
-        href="/?map=1"
-        className="absolute top-4 left-4 z-30 rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-black shadow-lg transition hover:scale-105"
-      >
-        ← Back to Home
-      </Link>
+          href="/?map=1"
+          className="home-button absolute top-4 left-4 z-30 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-stone-800/70 border-2 border-amber-500/50 flex items-center justify-center text-white hover:bg-stone-700/80"
+          aria-label="Back to map"
+        >
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+            <polyline points="9 22 9 12 15 12 15 22" />
+          </svg>
+        </Link>
 
       {/* Desktop */}
       <div className="relative z-10 hidden min-h-screen w-full items-center justify-center overflow-x-auto px-6 py-20 md:flex md:px-16">

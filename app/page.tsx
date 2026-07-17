@@ -47,21 +47,24 @@ const STORYLINE = [
 ];
 
 const locations = [
-  { id: 1, name: "Dulcia",      x: 42, y: 42, color: "amber",  emoji: "🏜️", href: "/" },
-  { id: 2, name: "Ignara",      x: 62, y: 42, color: "red",    emoji: "🌋", href: "/" },
-  { id: 3, name: "Avelis",      x: 44, y: 78, color: "cyan",   emoji: "🌊", href: "/" },
-  { id: 4, name: "Wygrove",     x: 59, y: 78, color: "green",  emoji: "🌿", href: "/" },
-  { id: 5, name: "Committee",   x: 22, y: 38, color: "purple", emoji: "🎪", href: "/committee" },
-  { id: 6, name: "About Us",    x: 83, y: 40, color: "slate",  emoji: "💻", href: "/about" },
-  { id: 7, name: "Leaderboard", x: 85, y: 80, color: "yellow", emoji: "🏆", href: "/leaderboard" },
-  { id: 8, name: "Events",      x: 20, y: 72, color: "teal",   emoji: "🎉", href: "/event" },
+  { id: 1, name: "Dulcia",      x: 42, y: 42, mx: 32, my: 53, color: "amber",  emoji: "🏜️", href: "/" },
+  { id: 2, name: "Ignara",      x: 62, y: 42, mx: 72, my: 53, color: "red",    emoji: "🌋", href: "/" },
+  { id: 3, name: "Avelis",      x: 44, y: 78, mx: 32, my: 72, color: "cyan",   emoji: "🌊", href: "/" },
+  { id: 4, name: "Wygrove",     x: 59, y: 78, mx: 72, my: 72, color: "green",  emoji: "🌿", href: "/" },
+  { id: 5, name: "Committee",   x: 22, y: 38, mx: 26, my: 36, color: "purple", emoji: "🎪", href: "/committee" },
+  { id: 6, name: "About Us",    x: 83, y: 40, mx: 72, my: 35, color: "slate",  emoji: "💻", href: "/about" },
+  { id: 7, name: "Leaderboard", x: 85, y: 80, mx: 74, my: 90, color: "yellow", emoji: "🏆", href: "/leaderboard" },
+  { id: 8, name: "Events",      x: 20, y: 72, mx: 26, my: 90, color: "teal",   emoji: "🎉", href: "/event" },
 ];
 
 type CharPos = { x: number; y: number };
-const IDLE: CharPos = { x: 52, y: 52 };
+const IDLE_DESKTOP: CharPos = { x: 52, y: 52 };
+const IDLE_MOBILE: CharPos  = { x: 52, y: 50 };
+
 // Where the sprite lands on the map (a touch left + lower than dead centre).
 // Also the launch point for the first umbrella flight.
-const MAP_CENTER: CharPos = { x: 51, y: 55 };
+const MAP_CENTER_DESKTOP: CharPos = { x: 51, y: 55 };
+const MAP_CENTER_MOBILE: CharPos  = { x: 51, y: 58 };
 
 const colorMap: Record<string, { btn: string; ring: string; badge: string; border: string }> = {
   amber:  { btn: "bg-amber-600/80 hover:bg-amber-500",   ring: "bg-amber-500/40",  badge: "bg-amber-200 text-amber-900",   border: "border-amber-500"  },
@@ -123,9 +126,6 @@ const easeInOutQuad = (t: number) =>
 type Flight = { loc: (typeof locations)[0]; from: CharPos; t: number };
 
 export default function Home() {
-  const [selectedId, setSelectedId] = useState<number | null>(null);
-  const [finnPos, setFinnPos]       = useState<CharPos>(IDLE);
-  const [jakePos, setJakePos]       = useState<CharPos>(IDLE);
 
   const introRef = useRef<HTMLDivElement>(null);
   const [climbProgress, setClimbProgress] = useState(0);
@@ -145,6 +145,13 @@ export default function Home() {
     mq.addEventListener("change", update);
     return () => mq.removeEventListener("change", update);
   }, []);
+  
+  const IDLE = isMobile ? IDLE_MOBILE : IDLE_DESKTOP;
+  const MAP_CENTER = isMobile ? MAP_CENTER_MOBILE : MAP_CENTER_DESKTOP;
+
+  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [finnPos, setFinnPos]       = useState<CharPos>(IDLE);
+  const [jakePos, setJakePos]       = useState<CharPos>(IDLE);
 
   useEffect(() => {
     let idleTimer: ReturnType<typeof setTimeout>;
@@ -367,11 +374,11 @@ export default function Home() {
   const flightScale = flight ? 1 + (FLIGHT_PEAK_SCALE - 1) * arc(flight.t) : 1;
 
   const climbersTop  = flightPos ? flightPos.y
-    : travelTarget ? travelTarget.y
+    : travelTarget ? (isMobile ? travelTarget.my : travelTarget.y)
     : walking ? walkTop
     : lerp(cliffTop, MAP_CENTER.y, flightEased);
   const climbersLeft = flightPos ? flightPos.x
-    : travelTarget ? travelTarget.x
+    : travelTarget ? (isMobile ? travelTarget.mx : travelTarget.x)
     : walking ? trailX(climbProgress)
     : lerp(trailX(WALK_END), MAP_CENTER.x, flightEased);
   const traveled = travelTarget !== undefined;
@@ -477,7 +484,7 @@ export default function Home() {
   // Map becomes interactive once clouds are fully gone
   const mapInteractive = cloudSplitEased >= 0.999;
 
-  const globalSpriteOpacity = climbDone && isMobile ? 0 : charOpacity;
+  const globalSpriteOpacity = charOpacity;
   const posTransition = flight ? undefined
     : traveled ? "left 0.75s cubic-bezier(0.34,1.5,0.64,1), top 0.75s cubic-bezier(0.34,1.5,0.64,1)"
     : landing ? "left 0.2s linear, top 0.2s linear" : undefined;
@@ -550,79 +557,53 @@ export default function Home() {
                 );
               })}
             </div>
+            <a href="/"
+              className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 inline-block px-8 py-4 rounded-full bg-black hover:bg-white hover:text-black text-white text-sm font-semibold tracking-wider uppercase shadow-lg backdrop-blur-sm border border-white/25 transition-all duration-200 hover:scale-105"
+              style={{ fontFamily: "Pixel, UncialAntiqua, serif", textShadow: "0 2px 8px rgba(0,0,0,0.4)" }}>
+              REGISTER NOW
+            </a>
           </div>
 
           {/* ═══════════════════ MOBILE MAP ═══════════════════ */}
-          <div className="md:hidden h-full w-full flex flex-col"
-            style={{ background: "radial-gradient(ellipse at 50% 30%, #93c5fd 0%, #3b82f6 40%, #1d4ed8 100%)" }}>
+          <div className="md:hidden relative h-full w-full">
+            <Image src="/images/map_mobile.png" alt="World Map" fill className="object-cover" />
 
-            {/* Title — fixed, doesn't scroll */}
-            <div className="flex-shrink-0 text-center pt-6 pb-3 px-4">
+            {/* Title */}
+            <div className="absolute top-10 left-1/2 -translate-x-1/2 z-10 text-center pointer-events-none">
               <h1 className="text-3xl font-bold tracking-widest text-white uppercase"
-                style={{ textShadow: "0 2px 8px rgba(0,0,0,0.5)" }}>GTD XXVIII</h1>
-              <h2 className="text-5xl font-bold tracking-widest text-white uppercase mt-1"
-                style={{ fontFamily: "AdventureTime, UncialAntiqua, serif", textShadow: "0 2px 8px rgba(0,0,0,0.5)" }}>AETERNA</h2>
-              <p className="text-sky-200 text-xs tracking-wider mt-0.5">
-                {selectedLoc ? `✈ Traveling to ${selectedLoc.name}…` : "Choose your destination"}
+                style={{ textShadow: "0 2px 12px rgba(0,0,0,0.55)" }}>
+                GTD XXVIII
+              </h1>
+              <h2 className="text-6xl font-bold tracking-widest text-white uppercase mt-1"
+                style={{ fontFamily: "AdventureTime, UncialAntiqua, serif", textShadow: "0 2px 12px rgba(0,0,0,0.55)" }}>
+                AETERNA
+              </h2>
+              <p className="text-sky-200 text-xs tracking-wider mt-1">
+                {selectedLoc ? `✈ Traveling to ${selectedLoc.name}…` : "Tap a region to begin your adventure"}
               </p>
+              <a href="/"
+                className="pointer-events-auto inline-block mt-3 px-5 py-2 rounded-full bg-black hover:bg-amber-400 text-white text-sm font-semibold tracking-wider uppercase shadow-lg backdrop-blur-sm border border-white/25 transition-all duration-200 hover:scale-105"
+                style={{ fontFamily: "Pixel, UncialAntiqua, serif", textShadow: "0 2px 8px rgba(0,0,0,0.4)" }}>
+                REGISTER NOW
+              </a>
             </div>
 
-            {/* Map card — fixed, doesn't scroll */}
-            <div className="flex-shrink-0 mx-4 mt-1 mb-3 rounded-3xl overflow-hidden"
-              style={{ boxShadow: "0 0 30px 4px rgba(147,197,253,0.3), 0 8px 32px rgba(0,0,0,0.5)" }}>
-              <div className="relative aspect-video">
-                <Image src="/images/map.png" alt="World Map" fill className="object-cover" />
-                {locations.map((loc) => {
-                  const c = colorMap[loc.color];
-                  const active = selectedId === loc.id;
-                  return (
-                    <button key={loc.id} onClick={() => handleSelect(loc)}
-                      className="absolute -translate-x-1/2 -translate-y-1/2 z-10"
-                      style={{ left: `${loc.x}%`, top: `${loc.y}%` }}>
-                      <span className={`absolute -inset-1.5 rounded-full ${c.ring} ${active ? "animate-ping opacity-100" : "opacity-0"}`} />
-                      <span className={`relative block w-3 h-3 rounded-full ${c.btn} border border-white/70 transition-transform ${active ? "scale-125" : ""}`} />
-                    </button>
-                  );
-                })}
-                <div className="absolute z-10 pointer-events-none"
-                  style={{
-                    left: `${climbersLeft}%`,
-                    top: `${climbersTop}%`,
-                    transform: `translate(-50%, -100%) scaleX(${facingRight ? 1 : -1})`,
-                    opacity: charOpacity,
-                    transition: traveled ? "left 0.75s cubic-bezier(0.34,1.5,0.64,1), top 0.75s cubic-bezier(0.34,1.5,0.64,1)"
-                      : landing ? "left 0.2s linear, top 0.2s linear" : undefined,
-                  }}>
-                  <Image
-                    src={`/images/${spriteDir}/frame_${spriteFrame}.png`}
-                    alt="Finn and Jake"
-                    width={44}
-                    height={48}
-                    unoptimized
-                    priority
-                    style={{ objectFit: "contain", imageRendering: "pixelated" }}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Location list — the only scrollable region */}
-            <div className="flex-1 min-h-0 overflow-y-auto mx-4 mb-4 rounded-3xl bg-slate-950/90 divide-y divide-white/5"
-              style={{ boxShadow: "0 8px 32px rgba(0,0,0,0.5)" }}>
+            {/* Location pins */}
+            <div className="absolute inset-0">
               {locations.map((loc) => {
                 const c = colorMap[loc.color];
                 const active = selectedId === loc.id;
+                const isKingdom = loc.id <= 4;
                 return (
                   <a key={loc.id} href={loc.href} onClick={(e) => handleMobileSelect(e, loc)}
-                    className={`w-full flex items-center gap-3 px-4 py-3 transition active:scale-[0.98] ${active ? "bg-white/5" : ""}`}>
-                    <span className={`flex-shrink-0 w-9 h-9 rounded-lg ${c.btn} flex items-center justify-center text-base shadow`}>
-                      {loc.emoji}
-                    </span>
-                    <span className="text-white text-sm font-medium" style={{ fontFamily: "Pixel, UncialAntiqua, serif" }}>
+                    className="absolute -translate-x-1/2 -translate-y-1/2 group flex flex-col items-center z-20"
+                    style={{ left: `${loc.mx}%`, top: `${loc.my}%` }}>
+                    <span className={`absolute ${isKingdom ? "w-14 h-14" : "w-10 h-10"} rounded-full ${c.ring} animate-ping ${active ? "opacity-100" : "opacity-60"}`} />
+                    <span className={`relative z-10 flex items-center gap-1.5 ${c.btn} text-gray-200 border ${active ? `${c.border} ring-2 ring-white/60 scale-110` : "border-white/25"} ${isKingdom ? "px-3.5 py-2 text-sm" : "px-2.5 py-1 text-xs"} rounded-full font-semibold shadow-lg backdrop-blur-sm whitespace-nowrap transition-all duration-200 active:scale-110`}
+                      style={{ fontFamily: "Pixel, UncialAntiqua, serif" }}>
+                      <span className={isKingdom ? "text-sm" : "text-xs"}>{loc.emoji}</span>
                       {loc.name}
                     </span>
-                    {active && <span className="w-2.5 h-2.5 rounded-full bg-white animate-pulse" />}
-                    <span className="ml-auto text-white/40 text-lg">→</span>
                   </a>
                 );
               })}

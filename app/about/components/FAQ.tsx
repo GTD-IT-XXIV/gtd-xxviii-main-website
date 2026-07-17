@@ -20,7 +20,7 @@ export default function FAQ() {
         },
         {
             question: "How much does the orientation cost?",
-            answer: "$30. This price includes our annual GTD T-Shirt, dinner & bus accommodation on August 4, and many more!"
+            answer: "$30. This price includes our annual GTD T-Shirt, dinner & bus accommodation on August 3, and many more!"
         },
     ];
 
