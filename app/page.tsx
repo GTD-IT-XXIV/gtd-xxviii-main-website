@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import SponsorsSection from "@/app/_components/SponsorsSection";
+import HouseModal from "@/app/_components/HouseModal";
 
 const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
 const lerp = (a: number, b: number, t: number) => a + (b - a) * clamp(t, 0, 1);
@@ -48,15 +49,34 @@ const STORYLINE = [
 ];
 
 const locations = [
-  { id: 1, name: "Dulcia",      x: 42, y: 36, color: "amber",  emoji: "🏜️", href: "/" },
-  { id: 2, name: "Ignara",      x: 62, y: 36, color: "red",    emoji: "🌋", href: "/" },
-  { id: 3, name: "Avelis",      x: 42, y: 65, color: "cyan",   emoji: "🌊", href: "/" },
-  { id: 4, name: "Wygrove",     x: 62, y: 70, color: "green",  emoji: "🌿", href: "/" },
-  { id: 5, name: "Committee",   x: 15, y: 34, color: "purple", emoji: "🎪", href: "/committee" },
-  { id: 6, name: "About Us",    x: 85, y: 34, color: "slate",  emoji: "💻", href: "/about" },
-  { id: 7, name: "Leaderboard", x: 88, y: 75, color: "yellow", emoji: "🏆", href: "/leaderboard" },
-  { id: 8, name: "Event",       x: 12, y: 65, color: "teal",   emoji: "🎉", href: "/event" },
+  { id: 1, name: "Dulcia",      x: 42, y: 36, color: "amber",  emoji: "🏜️", href: "/",            houseKey: "Dulcia"  },
+  { id: 2, name: "Ignara",      x: 62, y: 36, color: "red",    emoji: "🌋", href: "/",            houseKey: "Ignara"  },
+  { id: 3, name: "Avelis",      x: 42, y: 65, color: "cyan",   emoji: "🌊", href: "/",            houseKey: "Avelis"  },
+  { id: 4, name: "Wygrove",     x: 62, y: 70, color: "green",  emoji: "🌿", href: "/",            houseKey: "Wygrove" },
+  { id: 5, name: "Committee",   x: 15, y: 34, color: "purple", emoji: "🎪", href: "/committee",   houseKey: null },
+  { id: 6, name: "About Us",    x: 85, y: 34, color: "slate",  emoji: "💻", href: "/about",       houseKey: null },
+  { id: 7, name: "Leaderboard", x: 88, y: 75, color: "yellow", emoji: "🏆", href: "/leaderboard", houseKey: null },
+  { id: 8, name: "Event",       x: 12, y: 65, color: "teal",   emoji: "🎉", href: "/event",       houseKey: null },
 ];
+
+const HOUSE_DATA: Record<string, { name: string; gls: string[] }[]> = {
+  Dulcia:  [
+    { name: "OG 1", gls: ["GL Name", "GL Name"] },
+    { name: "OG 2", gls: ["GL Name", "GL Name"] },
+  ],
+  Ignara:  [
+    { name: "OG 5", gls: ["GL Name", "GL Name"] },
+    { name: "OG 6", gls: ["GL Name", "GL Name"] },
+  ],
+  Avelis:  [
+    { name: "OG 3", gls: ["GL Name", "GL Name"] },
+    { name: "OG 4", gls: ["GL Name", "GL Name"] },
+  ],
+  Wygrove: [
+    { name: "OG 7", gls: ["GL Name", "GL Name"] },
+    { name: "OG 8", gls: ["GL Name", "GL Name"] },
+  ],
+};
 
 type CharPos = { x: number; y: number };
 const IDLE: CharPos = { x: 52, y: 52 };
@@ -78,6 +98,7 @@ export default function Home() {
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [finnPos, setFinnPos]       = useState<CharPos>(IDLE);
   const [jakePos, setJakePos]       = useState<CharPos>(IDLE);
+  const [openHouse, setOpenHouse]   = useState<string | null>(null);
 
   const introRef = useRef<HTMLDivElement>(null);
   const [climbProgress, setClimbProgress] = useState(0);
@@ -210,7 +231,7 @@ export default function Home() {
         {/* ── z:2 — Map, permanently behind everything, revealed by parting clouds ── */}
         <div
           className="absolute inset-0"
-          style={{ zIndex: 2, background: "#e8dcc8", pointerEvents: mapInteractive ? "auto" : "none" }}
+          style={{ zIndex: 2, background: "#e8dcc8", pointerEvents: mapInteractive ? "auto" : "none", filter: openHouse ? "blur(4px)" : "none", transition: "filter 0.2s ease" }}
         >
           {/* ═══════════════════ DESKTOP MAP ═══════════════════ */}
           <div className="hidden md:block relative h-full w-full">
@@ -250,7 +271,8 @@ export default function Home() {
                 const c = colorMap[loc.color];
                 const active = selectedId === loc.id;
                 return (
-                  <a key={loc.id} href={loc.href} onClick={() => handleSelect(loc)}
+                  <a key={loc.id} href={loc.houseKey ? "#" : loc.href}
+                    onClick={(e) => { handleSelect(loc); if (loc.houseKey) { e.preventDefault(); setOpenHouse(loc.houseKey); } }}
                     className="absolute -translate-x-1/2 -translate-y-1/2 group flex flex-col items-center z-20"
                     style={{ left: `${loc.x}%`, top: `${loc.y}%` }}>
                     <span className={`absolute w-10 h-10 rounded-full ${c.ring} animate-ping ${active ? "opacity-100" : "opacity-60"}`} />
@@ -307,7 +329,7 @@ export default function Home() {
                   const c = colorMap[loc.color];
                   const active = selectedId === loc.id;
                   return (
-                    <button key={loc.id} onClick={() => handleSelect(loc)}
+                    <button key={loc.id} onClick={() => { handleSelect(loc); if (loc.houseKey) setOpenHouse(loc.houseKey); }}
                       className={`w-full flex items-center gap-3 px-4 py-3 transition active:scale-[0.98] ${active ? "bg-white/5" : ""}`}>
                       <span className={`flex-shrink-0 w-9 h-9 rounded-lg ${c.btn} flex items-center justify-center text-base shadow`}>
                         {loc.emoji}
@@ -468,6 +490,15 @@ export default function Home() {
 
       </div>
     </div>
+
+    {openHouse && (
+      <HouseModal
+        houseName={openHouse}
+        ogs={HOUSE_DATA[openHouse]}
+        onClose={() => setOpenHouse(null)}
+      />
+    )}
+
     <SponsorsSection />
     </>
   );
