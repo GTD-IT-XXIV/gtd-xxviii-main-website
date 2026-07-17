@@ -16,6 +16,14 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: "Pixel";
+  src: url("/fonts/VCR_OSD_MONO_1.001.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --background: #1d4ed8;
   --foreground: #ffffff;

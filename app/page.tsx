@@ -41,16 +41,16 @@ function trailX(p: number) {
 }
 
 const STORYLINE = [
-  "Long before the islands rose from the sea, Finn and Jake wandered the dark beneath the mountain — a single torch held high between them and a silence older than memory.",
-  "Step by step, the cave gave way to carved stairs, and the stairs to open air. Somewhere far above, they were told, a world of color was waiting to be found.",
-  "They climbed not knowing what they'd find — only that the light kept getting closer, and that the legend of AETERNA was about to begin.",
+  "Long ago, the Land of Ooo was divided into four thriving kingdoms, each sustained by a unique source of life. Water nourished the people of Avelis, fire gave strength to Ignara, the forests of Wygrove provided abundance, and the floating kingdom of Dulcia flourished through the sweetness of its precious resources. For generations, the kingdoms prospered in harmony—until their life sources began to fade.",
+  "With their futures at stake, each kingdom sends a group of brave adventurers on a journey to the legendary Dreamland, the only place believed to hold the power to restore what has been lost. United by a common purpose yet shaped by different cultures, strengths, and traditions, these groups must venture beyond the safety of their homes into an uncertain world.",
+  "As the journey unfolds, resources grow scarce, their means of travel comes to a halt, and desperation begins to test the trust between the kingdoms. Faced with impossible choices, they soon realize that survival is not about protecting the interests of a single kingdom, but about recognizing that every kingdom's strength is interconnected. Only by working together can they overcome the challenges ahead, reach Dreamland, and restore balance to the Land of Ooo.",
 ];
 
 const locations = [
   { id: 1, name: "Dulcia",      x: 42, y: 42, color: "amber",  emoji: "🏜️", href: "/" },
   { id: 2, name: "Ignara",      x: 62, y: 42, color: "red",    emoji: "🌋", href: "/" },
-  { id: 3, name: "Avelis",      x: 44, y: 75, color: "cyan",   emoji: "🌊", href: "/" },
-  { id: 4, name: "Wygrove",     x: 59, y: 75, color: "green",  emoji: "🌿", href: "/" },
+  { id: 3, name: "Avelis",      x: 44, y: 78, color: "cyan",   emoji: "🌊", href: "/" },
+  { id: 4, name: "Wygrove",     x: 59, y: 78, color: "green",  emoji: "🌿", href: "/" },
   { id: 5, name: "Committee",   x: 22, y: 38, color: "purple", emoji: "🎪", href: "/committee" },
   { id: 6, name: "About Us",    x: 83, y: 40, color: "slate",  emoji: "💻", href: "/about" },
   { id: 7, name: "Leaderboard", x: 85, y: 80, color: "yellow", emoji: "🏆", href: "/leaderboard" },
@@ -64,14 +64,14 @@ const IDLE: CharPos = { x: 52, y: 52 };
 const MAP_CENTER: CharPos = { x: 51, y: 55 };
 
 const colorMap: Record<string, { btn: string; ring: string; badge: string; border: string }> = {
-  amber:  { btn: "bg-amber-500/90 hover:bg-amber-400",   ring: "bg-amber-400/40",  badge: "bg-amber-100 text-amber-800",   border: "border-amber-400"  },
-  red:    { btn: "bg-red-600/90 hover:bg-red-500",       ring: "bg-red-500/40",    badge: "bg-red-100 text-red-800",       border: "border-red-500"    },
-  cyan:   { btn: "bg-cyan-500/90 hover:bg-cyan-400",     ring: "bg-cyan-400/40",   badge: "bg-cyan-100 text-cyan-800",     border: "border-cyan-400"   },
-  green:  { btn: "bg-green-600/90 hover:bg-green-500",   ring: "bg-green-500/40",  badge: "bg-green-100 text-green-800",   border: "border-green-400"  },
-  purple: { btn: "bg-purple-600/90 hover:bg-purple-500", ring: "bg-purple-500/40", badge: "bg-purple-100 text-purple-800", border: "border-purple-400" },
-  slate:  { btn: "bg-slate-600/90 hover:bg-slate-500",   ring: "bg-slate-500/40",  badge: "bg-slate-100 text-slate-800",   border: "border-slate-400"  },
-  yellow: { btn: "bg-yellow-500/90 hover:bg-yellow-400", ring: "bg-yellow-400/40", badge: "bg-yellow-100 text-yellow-800", border: "border-yellow-400" },
-  teal:   { btn: "bg-teal-500/90 hover:bg-teal-400",     ring: "bg-teal-400/40",   badge: "bg-teal-100 text-teal-800",     border: "border-teal-400"   },
+  amber:  { btn: "bg-amber-600/80 hover:bg-amber-500",   ring: "bg-amber-500/40",  badge: "bg-amber-200 text-amber-900",   border: "border-amber-500"  },
+  red:    { btn: "bg-red-700/80 hover:bg-red-600",       ring: "bg-red-600/40",    badge: "bg-red-200 text-red-900",       border: "border-red-600"    },
+  cyan:   { btn: "bg-cyan-600/80 hover:bg-cyan-500",     ring: "bg-cyan-500/40",   badge: "bg-cyan-200 text-cyan-900",     border: "border-cyan-500"   },
+  green:  { btn: "bg-green-700/80 hover:bg-green-600",   ring: "bg-green-600/40",  badge: "bg-green-200 text-green-900",   border: "border-green-500"  },
+  purple: { btn: "bg-purple-700/90 hover:bg-purple-600", ring: "bg-purple-600/40", badge: "bg-purple-200 text-purple-900", border: "border-purple-500" },
+  slate:  { btn: "bg-slate-700/90 hover:bg-slate-600",   ring: "bg-slate-600/40",  badge: "bg-slate-200 text-slate-900",   border: "border-slate-500"  },
+  yellow: { btn: "bg-yellow-600/90 hover:bg-yellow-500", ring: "bg-yellow-500/40", badge: "bg-yellow-200 text-yellow-900", border: "border-yellow-500" },
+  teal:   { btn: "bg-teal-600/90 hover:bg-teal-500",     ring: "bg-teal-500/40",   badge: "bg-teal-200 text-teal-900",     border: "border-teal-500"   },
 };
 
 const SPRING = "left 0.75s cubic-bezier(0.34,1.5,0.64,1), top 0.75s cubic-bezier(0.34,1.5,0.64,1)";
@@ -428,21 +428,21 @@ export default function Home() {
     ? trailX(climbProgress) >= trailX(Math.max(0, climbProgress - 0.005))
     : trailX(WALK_END) >= trailX(WALK_END - 0.005);
 
-  const para0 = windowOpacity(climbProgress, 0.15, 0.34, 0.05);
-  const para1 = windowOpacity(climbProgress, 0.40, 0.59, 0.05);
-  const para2 = windowOpacity(climbProgress, 0.65, 0.84, 0.05);
+  const para0 = windowOpacity(climbProgress, 0.055, 0.285, 0.07);
+  const para1 = windowOpacity(climbProgress, 0.282  , 0.455, 0.07);
+  const para2 = windowOpacity(climbProgress, 0.452, 0.645, 0.07);
   const storylineOpacities = [para0, para1, para2];
 
   const storylineLayout: { side: "left" | "right"; top: number }[] = [
-    { side: "right", top: lerp(82, 16, 0.245) },
-    { side: "left",  top: lerp(82, 16, 0.495) },
+    { side: "right", top: lerp(82, 16, 0.305) },
+    { side: "left",  top: lerp(82, 16, 0.455) },
     { side: "right", top: lerp(82, 16, 0.745) },
   ];
 
   const storylineLayoutMobile: { top: number }[] = [
-    { top: 16 },
-    { top: 44 },
-    { top: 72 },
+    { top: 6 },
+    { top: 6 },
+    { top: 46 },
   ];
 
   const introHintOpacity = lerp(1, 0, Math.min(climbProgress / 0.08, 1));
@@ -534,13 +534,16 @@ export default function Home() {
               {locations.map((loc) => {
                 const c = colorMap[loc.color];
                 const active = selectedId === loc.id;
+                const isKingdom = loc.id <= 4; // Dulcia, Ignara, Avelis, Wygrove
+
                 return (
                   <a key={loc.id} href={loc.href} onClick={(e) => startFlight(e, loc)}
                     className="absolute -translate-x-1/2 -translate-y-1/2 group flex flex-col items-center z-20"
                     style={{ left: `${loc.x}%`, top: `${loc.y}%` }}>
-                    <span className={`absolute w-10 h-10 rounded-full ${c.ring} animate-ping ${active ? "opacity-100" : "opacity-60"}`} />
-                    <span className={`relative z-10 flex items-center gap-1.5 ${c.btn} text-white border ${active ? `${c.border} ring-2 ring-white/60 scale-110` : "border-white/25"} px-3 py-1.5 rounded-full text-sm font-semibold shadow-lg backdrop-blur-sm whitespace-nowrap transition-all duration-200 group-hover:scale-110 group-hover:shadow-xl`}>
-                      <span className="text-xs">{loc.emoji}</span>
+                    <span className={`absolute ${isKingdom ? "w-20 h-20" : "w-12 h-12"} rounded-full ${c.ring} animate-ping ${active ? "opacity-100" : "opacity-60"}`} />
+                    <span className={`relative z-10 flex items-center gap-1.5 ${c.btn} text-gray-200 border ${active ? `${c.border} ring-2 ring-white/60 scale-110` : "border-white/25"} ${isKingdom ? "px-5 py-3 text-lg" : "px-3 py-1.5 text-sm"} rounded-full font-semibold shadow-lg backdrop-blur-sm whitespace-nowrap transition-all duration-200 group-hover:scale-110 group-hover:shadow-xl`}
+                      style={{ fontFamily: "Pixel, UncialAntiqua, serif" }}>
+                      <span className={isKingdom ? "text-base" : "text-xs"}>{loc.emoji}</span>
                       {loc.name}
                     </span>
                   </a>
@@ -615,7 +618,9 @@ export default function Home() {
                     <span className={`flex-shrink-0 w-9 h-9 rounded-lg ${c.btn} flex items-center justify-center text-base shadow`}>
                       {loc.emoji}
                     </span>
-                    <span className="text-white text-sm font-medium">{loc.name}</span>
+                    <span className="text-white text-sm font-medium" style={{ fontFamily: "Pixel, UncialAntiqua, serif" }}>
+                      {loc.name}
+                    </span>
                     {active && <span className="w-2.5 h-2.5 rounded-full bg-white animate-pulse" />}
                     <span className="ml-auto text-white/40 text-lg">→</span>
                   </a>
@@ -745,7 +750,7 @@ export default function Home() {
                 opacity: storylineOpacities[i],
                 transform: `translate(${isRight ? lerp(28, 0, storylineOpacities[i]) : lerp(-28, 0, storylineOpacities[i])}px, -50%)`,
               }}>
-              <p className="inline-block text-amber-50/95 text-base leading-relaxed tracking-wide bg-black/35 backdrop-blur-sm border border-white/10 rounded-2xl px-6 py-5"
+              <p className="inline-block text-amber-50/95 text-base leading-relaxed tracking-wide bg-black/75 backdrop-blur-sm border border-white/10 rounded-2xl px-6 py-5"
                 style={{ fontFamily: "AdventureTime, UncialAntiqua, serif", textShadow: "0 2px 10px rgba(0,0,0,0.6)" }}>
                 {line}
               </p>
@@ -765,7 +770,7 @@ export default function Home() {
                 opacity: storylineOpacities[i],
                 transform: `translate(-50%, ${lerp(16, -50, 1) + (50 - lerp(16, 0, storylineOpacities[i]))}px)`,
               }}>
-              <p className="inline-block text-amber-50/95 text-sm leading-relaxed tracking-wide bg-black/35 backdrop-blur-sm border border-white/10 rounded-2xl px-5 py-4"
+              <p className="inline-block text-amber-50/95 text-sm leading-relaxed tracking-wide bg-black/85 backdrop-blur-sm border border-white/10 rounded-2xl px-5 py-4"
                 style={{ fontFamily: "AdventureTime, UncialAntiqua, serif", textShadow: "0 2px 10px rgba(0,0,0,0.6)" }}>
                 {line}
               </p>
