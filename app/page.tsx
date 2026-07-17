@@ -652,8 +652,13 @@ export default function Home() {
         </div>
 
         {/* ── z:3 — Left cloud: pans with path, then slides off-screen left ── */}
+        {/* Mobile renders the cloud at its natural aspect (h-full w-auto, NO crop) in
+            an overflow-visible layer, so the whole painted image — including its soft
+            right edge — is intact. The solid body bleeds off the left; the soft edge
+            sits just right of centre. Both clouds overlap to cover the screen, then
+            slide apart so their soft edges open the seam. Desktop keeps cover + pan. */}
         <div
-          className="absolute inset-0 pointer-events-none"
+          className={`absolute inset-y-0 left-0 right-0 pointer-events-none ${isMobile ? "overflow-visible" : ""}`}
           style={{
             zIndex: 3,
             transform: `translateX(${cloudLeftX}%)`,
@@ -661,18 +666,28 @@ export default function Home() {
             willChange: "transform, opacity",
           }}
         >
-          <Image
-            src="/images/clouds_l.png"
-            alt=""
-            fill
-            className="object-cover"
-            style={{ objectPosition: `left ${cloudPanPercent}%` }}
-          />
+          {isMobile ? (
+            // eslint-disable-next-line @next/next/no-img-element -- need natural size + transform, which next/image `fill` can't do
+            <img
+              src="/images/clouds_l.png"
+              alt=""
+              className="absolute inset-y-0 h-full w-auto max-w-none left-1/2"
+              style={{ transform: "translateX(-65%)" }}
+            />
+          ) : (
+            <Image
+              src="/images/clouds_l.png"
+              alt=""
+              fill
+              className="object-cover"
+              style={{ objectPosition: `left ${cloudPanPercent}%` }}
+            />
+          )}
         </div>
 
         {/* ── z:4 — Right cloud: pans with path, then slides + fades off-screen right ── */}
         <div
-          className="absolute inset-0 pointer-events-none"
+          className={`absolute inset-y-0 left-0 right-0 pointer-events-none ${isMobile ? "overflow-visible" : ""}`}
           style={{
             zIndex: 4,
             transform: `translateX(${cloudRightX}%)`,
@@ -680,13 +695,23 @@ export default function Home() {
             willChange: "transform, opacity",
           }}
         >
-          <Image
-            src="/images/clouds_r.png"
-            alt=""
-            fill
-            className="object-cover"
-            style={{ objectPosition: `right ${cloudPanPercent}%` }}
-          />
+          {isMobile ? (
+            // eslint-disable-next-line @next/next/no-img-element -- need natural size + transform, which next/image `fill` can't do
+            <img
+              src="/images/clouds_r.png"
+              alt=""
+              className="absolute inset-y-0 h-full w-auto max-w-none left-1/2"
+              style={{ transform: "translateX(-35%)" }}
+            />
+          ) : (
+            <Image
+              src="/images/clouds_r.png"
+              alt=""
+              fill
+              className="object-cover"
+              style={{ objectPosition: `right ${cloudPanPercent}%` }}
+            />
+          )}
         </div>
 
 
