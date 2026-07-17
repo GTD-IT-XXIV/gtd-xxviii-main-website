@@ -137,10 +137,10 @@ export function ExpandedCard({ member, index, topicIndex, onClose }: ExpandedCar
           <span className="expanded-detail-text text-stone-900 text-base sm:text-lg md:text-lg font-bold text-center leading-tight">
             {member.full_name}
           </span>
-          <span className="expanded-detail-text text-stone-700 text-xs sm:text-sm md:text-base text-center">
+          <span className="expanded-detail-text text-stone-800 text-xs sm:text-sm md:text-base text-center">
             {member.year_course}
           </span>
-          <span className="expanded-detail-text text-stone-600 text-xs sm:text-sm md:text-base text-center">
+          <span className="expanded-detail-text text-stone-800 text-xs sm:text-sm md:text-base text-center">
             {member.og}
           </span>
         </div>
