@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState, useEffect, useRef, useCallback } from "react";
 import SponsorsSection from "@/app/_components/SponsorsSection";
+import HouseModal from "@/app/_components/HouseModal";
 
 const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
 const lerp = (a: number, b: number, t: number) => a + (b - a) * clamp(t, 0, 1);
@@ -47,15 +48,34 @@ const STORYLINE = [
 ];
 
 const locations = [
-  { id: 1, name: "Dulcia",      x: 42, y: 42, mx: 32, my: 53, color: "amber",  emoji: "🏜️", href: "/" },
-  { id: 2, name: "Ignara",      x: 62, y: 42, mx: 72, my: 53, color: "red",    emoji: "🌋", href: "/" },
-  { id: 3, name: "Avelis",      x: 44, y: 78, mx: 32, my: 72, color: "cyan",   emoji: "🌊", href: "/" },
-  { id: 4, name: "Wygrove",     x: 59, y: 78, mx: 72, my: 72, color: "green",  emoji: "🌿", href: "/" },
-  { id: 5, name: "Committee",   x: 22, y: 38, mx: 26, my: 36, color: "purple", emoji: "🎪", href: "/committee" },
-  { id: 6, name: "About Us",    x: 83, y: 40, mx: 72, my: 35, color: "slate",  emoji: "💻", href: "/about" },
-  { id: 7, name: "Leaderboard", x: 85, y: 80, mx: 74, my: 90, color: "yellow", emoji: "🏆", href: "/leaderboard" },
-  { id: 8, name: "Events",      x: 20, y: 72, mx: 26, my: 90, color: "teal",   emoji: "🎉", href: "/event" },
+  { id: 1, name: "Dulcia",      x: 42, y: 42, mx: 32, my: 53, color: "amber",  emoji: "🏜️", href: "/",             houseKey: "Dulcia"   },
+  { id: 2, name: "Ignara",      x: 62, y: 42, mx: 72, my: 53, color: "red",    emoji: "🌋", href: "/",             houseKey: "Ignara"   },
+  { id: 3, name: "Avelis",      x: 44, y: 78, mx: 32, my: 72, color: "cyan",   emoji: "🌊", href: "/",             houseKey: "Avelis"   },
+  { id: 4, name: "Wygrove",     x: 59, y: 78, mx: 72, my: 72, color: "green",  emoji: "🌿", href: "/",             houseKey: "Wygrove"  },
+  { id: 5, name: "Committee",   x: 22, y: 38, mx: 26, my: 36, color: "purple", emoji: "🎪", href: "/committee",    houseKey: null },
+  { id: 6, name: "About Us",    x: 83, y: 40, mx: 72, my: 35, color: "slate",  emoji: "💻", href: "/about",        houseKey: null },
+  { id: 7, name: "Leaderboard", x: 85, y: 80, mx: 74, my: 90, color: "yellow", emoji: "🏆", href: "/leaderboard",  houseKey: null },
+  { id: 8, name: "Events",      x: 20, y: 72, mx: 26, my: 90, color: "teal",   emoji: "🎉", href: "/event",        houseKey: null },
 ];
+
+const HOUSE_DATA: Record<string, { name: string; gls: string[] }[]> = {
+  Dulcia:  [
+    { name: "OG 1", gls: ["GL Name", "GL Name"] },
+    { name: "OG 2", gls: ["GL Name", "GL Name"] },
+  ],
+  Ignara:  [
+    { name: "OG 5", gls: ["GL Name", "GL Name"] },
+    { name: "OG 6", gls: ["GL Name", "GL Name"] },
+  ],
+  Avelis:  [
+    { name: "OG 3", gls: ["GL Name", "GL Name"] },
+    { name: "OG 4", gls: ["GL Name", "GL Name"] },
+  ],
+  Wygrove: [
+    { name: "OG 7", gls: ["GL Name", "GL Name"] },
+    { name: "OG 8", gls: ["GL Name", "GL Name"] },
+  ],
+};
 
 type CharPos = { x: number; y: number };
 const IDLE_DESKTOP: CharPos = { x: 52, y: 52 };
@@ -126,6 +146,8 @@ const easeInOutQuad = (t: number) =>
 type Flight = { loc: (typeof locations)[0]; from: CharPos; t: number };
 
 export default function Home() {
+
+  const [openHouse, setOpenHouse]   = useState<string | null>(null);
 
   const introRef = useRef<HTMLDivElement>(null);
   const [climbProgress, setClimbProgress] = useState(0);
@@ -514,7 +536,7 @@ export default function Home() {
         {/* ── z:2 — Map, permanently behind everything, revealed by parting clouds ── */}
         <div
           className="absolute inset-0"
-          style={{ zIndex: 2, background: "#e8dcc8", pointerEvents: mapInteractive ? "auto" : "none" }}
+          style={{ zIndex: 2, background: "#e8dcc8", pointerEvents: mapInteractive ? "auto" : "none", filter: openHouse ? "blur(4px)" : "none", transition: "filter 0.2s ease" }}
         >
           {/* ═══════════════════ DESKTOP MAP ═══════════════════ */}
           <div className="hidden md:block relative h-full w-full">
@@ -544,7 +566,16 @@ export default function Home() {
                 const isKingdom = loc.id <= 4; // Dulcia, Ignara, Avelis, Wygrove
 
                 return (
-                  <a key={loc.id} href={loc.href} onClick={(e) => startFlight(e, loc)}
+                  <a key={loc.id} href={loc.houseKey ? "#" : loc.href}
+                    onClick={(e) => {
+                      if (loc.houseKey) {
+                        e.preventDefault();
+                        handleSelect(loc);
+                        setTimeout(() => setOpenHouse(loc.houseKey), 800);
+                        return;
+                      }
+                      startFlight(e, loc);
+                    }}
                     className="absolute -translate-x-1/2 -translate-y-1/2 group flex flex-col items-center z-20"
                     style={{ left: `${loc.x}%`, top: `${loc.y}%` }}>
                     <span className={`absolute ${isKingdom ? "w-20 h-20" : "w-12 h-12"} rounded-full ${c.ring} animate-ping ${active ? "opacity-100" : "opacity-60"}`} />
@@ -595,7 +626,16 @@ export default function Home() {
                 const active = selectedId === loc.id;
                 const isKingdom = loc.id <= 4;
                 return (
-                  <a key={loc.id} href={loc.href} onClick={(e) => handleMobileSelect(e, loc)}
+                  <a key={loc.id} href={loc.houseKey ? "#" : loc.href}
+                    onClick={(e) => {
+                      if (loc.houseKey) {
+                        e.preventDefault();
+                        handleSelect(loc);
+                        setTimeout(() => setOpenHouse(loc.houseKey), 800);
+                        return;
+                      }
+                      handleMobileSelect(e, loc);
+                    }}
                     className="absolute -translate-x-1/2 -translate-y-1/2 group flex flex-col items-center z-20"
                     style={{ left: `${loc.mx}%`, top: `${loc.my}%` }}>
                     <span className={`absolute ${isKingdom ? "w-14 h-14" : "w-10 h-10"} rounded-full ${c.ring} animate-ping ${active ? "opacity-100" : "opacity-60"}`} />
@@ -787,6 +827,15 @@ export default function Home() {
 
       </div>
     </div>
+
+    {openHouse && (
+      <HouseModal
+        houseName={openHouse}
+        ogs={HOUSE_DATA[openHouse]}
+        onClose={() => setOpenHouse(null)}
+      />
+    )}
+
     <SponsorsSection />
     </>
   );
