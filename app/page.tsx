@@ -60,20 +60,20 @@ const locations = [
 
 const HOUSE_DATA: Record<string, { name: string; gls: string[]; image: string }[]> = {
   Dulcia:  [
-    { name: "OG 1", gls: ["Mikael Ernest Susanto", "Jenica Avela Setiawan"], image: "/images/houses/og/1.jpg" },
-    { name: "OG 2", gls: ["Kenneth Joshua", "Annabelle Qetsyah Putri Setyawan"], image: "/images/houses/og/2.jpg" },
+    { name: "OG 1", gls: ["-Mikael Ernest Susanto", "-Jenica Avela Setiawan"], image: "/images/houses/og/1.jpg" },
+    { name: "OG 2", gls: ["-Kenneth Joshua", "-Annabelle Qetsyah Putri Setyawan"], image: "/images/houses/og/2.jpg" },
   ],
   Ignara:  [
-    { name: "OG 5", gls: ["Panji Andika Saputra Wijaya", "Alkheisya Nabila Stavina"], image: "/images/houses/og/5.jpg" },
-    { name: "OG 6", gls: ["Azzam Harzuqi", "Amelia Chantiqa Dewi"], image: "/images/houses/og/6.jpg" },
+    { name: "OG 5", gls: ["-Panji Andika Saputra Wijaya", "-Alkheisya Nabila Stavina"], image: "/images/houses/og/5.jpg" },
+    { name: "OG 6", gls: ["-Azzam Harzuqi", "-Amelia Chantiqa Dewi"], image: "/images/houses/og/6.jpg" },
   ],
   Avelis:  [
-    { name: "OG 3", gls: ["Dhammanananda Justin Yu", "Farra Iva Karjadhi"], image: "/images/houses/og/3.jpg" },
-    { name: "OG 4", gls: ["Jay Riva Opi", "Vania Jovelyn Nando"], image: "/images/houses/og/4.jpg" },
+    { name: "OG 3", gls: ["-Dhammanananda Justin Yu", "-Farra Iva Karjadhi"], image: "/images/houses/og/3.jpg" },
+    { name: "OG 4", gls: ["-Jay Riva Opi", "-Vania Jovelyn Nando"], image: "/images/houses/og/4.jpg" },
   ],
   Wygrove: [
-    { name: "OG 7", gls: ["Marcellino Grant Hadisiswoyo", "Kevina Arin Lucetta"], image: "/images/houses/og/7.jpg" },
-    { name: "OG 8", gls: ["Ignatius Jovan Liem", "Olga Adelaine Kosasih"], image: "/images/houses/og/8.jpg" },
+    { name: "OG 7", gls: ["-Marcellino Grant Hadisiswoyo", "-Kevina Arin Lucetta"], image: "/images/houses/og/7.jpg" },
+    { name: "OG 8", gls: ["-Ignatius Jovan Liem", "-Olga Adelaine Kosasih"], image: "/images/houses/og/8.jpg" },
   ],
 };
 
