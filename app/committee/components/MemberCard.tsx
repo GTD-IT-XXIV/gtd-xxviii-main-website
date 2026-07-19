@@ -2,7 +2,25 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 import type { CommitteeMember } from "../committeeConfig";
+
+/** Tracks whether the viewport is below Tailwind's `sm` breakpoint (640px) */
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== "undefined" && window.matchMedia("(max-width: 639px)").matches
+  );
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 639px)");
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
+  return isMobile;
+}
 
 interface MemberCardProps {
   member: CommitteeMember;
@@ -81,9 +99,11 @@ interface ExpandedCardProps {
 }
 
 export function ExpandedCard({ member, index, topicIndex, onClose }: ExpandedCardProps) {
+  const isMobile = useIsMobile();
+
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex items-center justify-center"
+      className="fixed inset-0 z-50 flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-0 overflow-y-auto py-8 sm:py-0"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -131,10 +151,10 @@ export function ExpandedCard({ member, index, topicIndex, onClose }: ExpandedCar
 
         {/* ── Name on blue banner ── */}
         <div
-          className="absolute left-0 right-0 flex items-center justify-center"
-          style={{ bottom: "17.5%", height: "7%" }}
+          className="absolute left-0 right-0 flex items-end justify-center"
+          style={{ bottom: "17.5%", minHeight: "7%" }}
         >
-          <span className="card-banner-text text-white text-[20px] sm:text-md md:text-xl font-bold truncate px-4">
+          <span className="card-banner-text text-white text-[20px] sm:text-md md:text-xl font-bold text-center px-4 w-full min-w-0 whitespace-normal break-words">
             {member.name}
           </span>
         </div>
@@ -148,9 +168,12 @@ export function ExpandedCard({ member, index, topicIndex, onClose }: ExpandedCar
         <Sparkles />
       </motion.div>
       {/* ── Status card (next to the member card) ── */}
-        <div
-          className="relative flex-shrink-0"
-          style={{ width: "min(340px, 42vw)", aspectRatio: "3 / 4.2" }}
+        <motion.div
+          className="relative flex-shrink-0 z-0 w-[min(340px,80vw)] sm:w-[min(340px,42vw)]"
+          style={{ aspectRatio: "3 / 4.2" }}
+          initial={isMobile ? { opacity: 0, y: -280 } : { opacity: 0, x: -320 }}
+          animate={isMobile ? { opacity: 1, y: 0 } : { opacity: 1, x: 0 }}
+          transition={{ delay: 0.4, duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
         >
           {/* Status card background image */}
           <Image
@@ -166,36 +189,36 @@ export function ExpandedCard({ member, index, topicIndex, onClose }: ExpandedCar
           <div className="absolute inset-0" style={{ fontFamily: "'Inter', sans-serif" }}>
             <span
               className="expanded-detail-text absolute text-white text-sm sm:text-base md:text-lg font-bold leading-tight truncate"
-              style={{ top: "24.5%", left: "22.5%", right: "10%" }}
+              style={{ top: "21.5%", left: "22.5%", right: "10%" }}
             >
               Full Name
             </span>
             <span
-              className="expanded-detail-text absolute text-white text-sm sm:text-base md:text-lg font-bold leading-tight truncate"
-              style={{ top: "33%", left: "17%", right: "15%" }}
+              className="expanded-detail-text absolute text-white text-sm sm:text-base md:text-lg font-bold leading-tight whitespace-normal break-words"
+              style={{ top: "42%", left: "17%", right: "15%", transform: "translateY(-100%)" }}
             >
               {member.full_name}
             </span>
             <span
               className="expanded-detail-text absolute text-white text-sm sm:text-base md:text-lg font-bold leading-tight truncate"
-              style={{ top: "44%", left: "22%", right: "10%" }}
+              style={{ top: "54.5%", left: "22%", right: "10%" }}
             >
               Course/Year
             </span>
             <span
               className="expanded-detail-text absolute text-white text-sm sm:text-base md:text-lg font-bold leading-tight truncate"
-              style={{ top: "59%", left: "17%", right: "10%" }}
+              style={{ top: "62%", left: "17%", right: "10%" }}
             >
               {member.year_course}
             </span>
             <span
               className="expanded-detail-text absolute text-white text-sm sm:text-base md:text-lg font-bold leading-tight truncate"
-              style={{ top: "70.5%", left: "22.5%", right: "10%" }}
+              style={{ top: "73.5%", left: "22.5%", right: "10%" }}
             >
               {member.og}
             </span>
           </div>
-        </div>
+        </motion.div>
     </motion.div>
   );
 }

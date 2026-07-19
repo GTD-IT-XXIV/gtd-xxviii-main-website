@@ -40,11 +40,11 @@ export default function TopicBanner({
   onNext,
 }: TopicBannerProps) {
   return (
-    <div className="relative flex items-center justify-center gap-2 sm:gap-6 md:gap-10">
+    <div className="relative flex items-center justify-center gap-0">
       {/* ── Left Arrow ── */}
       <button
         onClick={onPrev}
-        className="topic-arrow z-20 flex-shrink-0 text-stone-900 hover:text-amber-800"
+        className="topic-arrow z-20 flex-shrink-0 text-white hover:text-amber-300"
         aria-label="Previous topic"
       >
         <svg
@@ -52,7 +52,7 @@ export default function TopicBanner({
           height="40"
           viewBox="0 0 40 40"
           fill="none"
-          className="w-8 h-8 sm:w-10 sm:h-10"
+          className="w-6 h-6 sm:w-10 sm:h-10"
         >
           <path
             d="M25 8L13 20L25 32"
@@ -68,8 +68,8 @@ export default function TopicBanner({
       <div
         className="relative flex-shrink-0"
         style={{
-          width: "min(560px, 65vw)",
-          aspectRatio: "16 / 10.5",
+          width: "min(720px, calc(100vw - 64px))",
+          aspectRatio: "1259 / 902",
         }}
       >
         <AnimatePresence mode="wait" custom={direction}>
@@ -84,20 +84,25 @@ export default function TopicBanner({
             className="absolute inset-0"
           >
             {/* ── Frame overlay (on top) ── */}
-            <Image
-              src="/images/committee_grp.png"
-              alt=""
-              fill
-              sizes="(max-width: 640px) 65vw, 560px"
-              className="object-contain pointer-events-none select-none z-10"
-              draggable={false}
-              priority
-            />
+            <div
+              className="absolute pointer-events-none z-10"
+              style={{ top: "6%", left: "6%", right: "6%", bottom: "6%" }}
+            >
+              <Image
+                src="/images/committee_grp.png"
+                alt=""
+                fill
+                sizes="(max-width: 640px) 65vw, 560px"
+                className="object-contain pointer-events-none select-none"
+                draggable={false}
+                priority
+              />
+            </div>
 
             {/* ── Group photo (behind the frame) ── */}
             <div
-              className="absolute overflow-hidden rounded-lg"
-              style={{ top: "8%", left: "19%", right: "17%", bottom: "28%" }}
+              className="absolute overflow-hidden rounded-xl"
+              style={{ top: "13.5%", left: "15.5%", right: "15%", bottom: "23%" }}
             >
               <Image
                 src={topic.group_image}
@@ -111,9 +116,9 @@ export default function TopicBanner({
             {/* ── Title on blue banner ── */}
             <div
               className="absolute left-0 right-0 flex items-center justify-center z-20"
-              style={{ bottom: "21%", height: "10%", transform: "translateX(7.5px)" }}
+              style={{ bottom: "16%", height: "10%", right: "2%", transform: "translateX(7.5px)" }}
             >
-              <h2 className="topic-title text-white text-[10px] sm:text-[15px] md:text-xl font-bold uppercase -translate-x-1 sm:translate-x-0">
+              <h2 className="topic-title text-white text-sm sm:text-xl md:text-2xl font-bold uppercase -translate-x-1 sm:translate-x-0">
                 {topic.title}
               </h2>
             </div>
@@ -121,7 +126,7 @@ export default function TopicBanner({
         </AnimatePresence>
 
         {/* ── Topic indicators (dots) ── */}
-        <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 flex gap-1.5 z-20">
+        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 flex gap-1.5 z-20">
           {Array.from({ length: totalTopics }).map((_, i) => (
             <div
               key={i}
@@ -138,7 +143,7 @@ export default function TopicBanner({
       {/* ── Right Arrow ── */}
       <button
         onClick={onNext}
-        className="topic-arrow z-20 flex-shrink-0 text-stone-900 hover:text-amber-800"
+        className="topic-arrow z-20 flex-shrink-0 text-white hover:text-amber-300"
         aria-label="Next topic"
       >
         <svg
@@ -146,7 +151,7 @@ export default function TopicBanner({
           height="40"
           viewBox="0 0 40 40"
           fill="none"
-          className="w-8 h-8 sm:w-10 sm:h-10"
+          className="w-6 h-6 sm:w-10 sm:h-10"
         >
           <path
             d="M15 8L27 20L15 32"

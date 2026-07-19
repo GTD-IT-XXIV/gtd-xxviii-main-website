@@ -45,13 +45,13 @@ export const committeeTopics: CommitteeTopic[] = [
     name: "Sheryn",
     full_name: "Sheryn Wu",
     year_course: "MSE/4",
-    og: "OG 5",
+    og: "OG 1",
     first_image: "/images/committee/mc/TOPS/SHERYN1.jpg",
     second_image: "/images/committee/mc/TOPS/SHERYN2.jpg",
   },
   {
     name: "Via",
-    full_name: "Agatha Via",
+    full_name: "Agatha Kristanavia",
     year_course: "CBC/4",
     og: "OG 7",
     first_image: "/images/committee/mc/tops/VIA1.jpg",
@@ -67,7 +67,7 @@ export const committeeTopics: CommitteeTopic[] = [
   },
   {
     name: "Olin",
-    full_name: "Caroline Wijaya",
+    full_name: "Caroline Wijaya Santoso",
     year_course: "MSE/4",
     og: "OG 4",
     first_image: "/images/committee/mc/tops/CAROLINE1.jpg",
@@ -77,7 +77,7 @@ export const committeeTopics: CommitteeTopic[] = [
     name: "Sharon",
     full_name: "Gabriella Sharon Gunawan",
     year_course: "ME/3",
-    og: "OG 3",
+    og: "OG 2",
     first_image: "/images/committee/mc/bfm/SHARON1.jpg",
     second_image: "/images/committee/mc/bfm/SHARON2.jpg",
   },
@@ -91,7 +91,7 @@ export const committeeTopics: CommitteeTopic[] = [
   },
   {
     name: "Michelle",
-    full_name: "Michelle Hung",
+    full_name: "Michelle Priscilla Hung",
     year_course: "CBE/3",
     og: "OG 4",
     first_image: "/images/committee/mc/bfm/MICHELLE1.jpg",
@@ -99,7 +99,7 @@ export const committeeTopics: CommitteeTopic[] = [
   },
   {
     name: "Judah",
-    full_name: "Judah Primeldi",
+    full_name: "Judah Valiant Primeldi",
     year_course: "CBE/3",
     og: "OG 3",
     first_image: "/images/committee/mc/gl/JUDAH1.jpg",
@@ -125,7 +125,7 @@ export const committeeTopics: CommitteeTopic[] = [
     name: "Chloe",
     full_name: "Chloe Atipinati Djohan",
     year_course: "CSC/3",
-    og: "OG 3",
+    og: "OG 2",
     first_image: "/images/committee/mc/polog/CHLOE1.jpg",
     second_image: "/images/committee/mc/polog/CHLOE2.jpg",
   },
@@ -241,7 +241,7 @@ export const committeeTopics: CommitteeTopic[] = [
     members: [
   {
     name: "Mikael",
-    full_name: "Mikael Ernest",
+    full_name: "Mikael Ernest Susanto",
     year_course: "CSC/2",
     og: "OG 1",
     first_image: "/images/committee/gl/MIKAEL1.jpg",
@@ -273,7 +273,7 @@ export const committeeTopics: CommitteeTopic[] = [
   },
   {
     name: "Nanda",
-    full_name: "Dhammanananda Justin",
+    full_name: "Dhammanananda Justin Yu",
     year_course: "BSB/2",
     og: " OG 3",
     first_image: "/images/committee/gl/Dhammananda1.jpg",
@@ -305,7 +305,7 @@ export const committeeTopics: CommitteeTopic[] = [
   },
   {
     name: "Panji",
-    full_name: "Panji Ndika Saputra Wijaya",
+    full_name: "Panji Andika Saputra Wijaya",
     year_course: "ACC/2",
     og: "OG 5",
     first_image: "/images/committee/gl/PANJI1.jpg",
@@ -345,7 +345,7 @@ export const committeeTopics: CommitteeTopic[] = [
   },
   {
     name: "Kevina",
-    full_name: "Kevina Arin Lucelta",
+    full_name: "Kevina Arin Lucetta",
     year_course: "DSAI/2",
     og: "OG 7",
     first_image: "/images/committee/gl/KEVINA1.jpg",
@@ -511,7 +511,7 @@ export const committeeTopics: CommitteeTopic[] = [
   },
   {
     name: "Bernardinus",
-    full_name: "Bernardinus Gabriel",
+    full_name: "Bernardinus Gabriel Hermawan",
     year_course: "IEM/2",
     og: "OG 2",
     first_image: "/images/committee/ppit/BERNARDINUS1.jpg",
@@ -551,7 +551,7 @@ export const committeeTopics: CommitteeTopic[] = [
   },
   {
     name: "Syidan",
-    full_name: "Rasyidan Naja",
+    full_name: "Rasyidan Naja Asardi",
     year_course: "EEE/4",
     og: "OG 1",
     first_image: "/images/committee/ppit/RASYIDAN1.jpg",

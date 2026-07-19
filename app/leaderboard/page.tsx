@@ -110,7 +110,7 @@ const SLOT_W = 18.8; // slot width as % of the frame image
 
 function DayTabs({ activeDay, onChange }: DayTabsProps) {
   return (
-    <div className="relative mx-auto w-[94%] max-w-[640px] md:w-[72%]">
+    <div className="relative mx-auto w-[70%] max-w-[480px] md:w-[54%]">
       <div className="relative w-full aspect-[2722/1536]">
         {/* Connected stone/gold bar */}
         <Image src="/images/day_tabs_frame.png" alt="Day selector" fill className="object-contain" priority />
@@ -290,12 +290,15 @@ export default function Page() {
   const restRows = rankingList.slice(3);
 
   return (
-    <div
-      className="flex min-h-screen w-screen items-center justify-center overflow-hidden bg-cover bg-center py-10"
-      style={{ backgroundImage: "url('/images/leaderboard_bg.png')" }}
-    >
-      <div className="relative w-[96vw] max-w-[900px] md:w-[80vw] text-[#5c3a1e]">
-        <h1 className="-mt-37 mb-6 text-center text-3xl font-extrabold tracking-wide text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.6)] md:mt-0 md:mb-6">
+    <div className="relative min-h-screen w-screen overflow-hidden">
+      <div
+        className="absolute inset-0 bg-cover bg-center opacity-60 md:opacity-100"
+        style={{ backgroundImage: "url('/images/leaderboard_bg.png')" }}
+      />
+
+      <div className="relative flex min-h-screen w-screen items-start justify-center pt-10 pb-10 md:pt-14">
+        <div className="relative w-[96vw] max-w-[900px] md:w-[80vw] text-[#5c3a1e]">
+        <h1 className="mb-2 text-center text-3xl font-extrabold tracking-wide text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.6)]">
           LEADERBOARD
         </h1>
 
@@ -320,14 +323,16 @@ export default function Page() {
 
         {!loading && !err && totalCount > 0 && (
           <>
-            <DayTabs activeDay={activeDay} onChange={setActiveDay} />
+            <div className="-mt-10">
+              <DayTabs activeDay={activeDay} onChange={setActiveDay} />
+            </div>
 
             {rankingList.length === 0 ? (
-              <div className="mt-24 text-center text-white/80 tracking-widest text-sm md:mt-16">
+              <div className="mt-20 text-center text-white/80 tracking-widest text-sm md:mt-6">
                 No rankings for Day {activeDay} yet
               </div>
             ) : (
-              <div className="relative mt-36 aspect-[1320/880] w-full text-[2.1vw] md:mt-28 md:text-[0.8vw] font-extrabold">
+              <div className="relative mt-20 aspect-[1320/880] w-full text-[2.1vw] md:mt-6 md:text-[0.8vw] font-extrabold">
                 {/* Podium + winner cards — the whole group is shrunk (w-[88%]) and nudged
                     down (top-[8%]) so the 1st-place card doesn't run off the top. Card
                     positions below are relative to THIS wrapper, so they track the podium. */}
@@ -435,6 +440,7 @@ export default function Page() {
             )}
           </>
         )}
+      </div>
       </div>
     </div>
   );
