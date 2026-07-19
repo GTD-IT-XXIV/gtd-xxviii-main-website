@@ -96,84 +96,115 @@ interface DayTabsProps {
   onChange: (d: Day) => void;
 }
 
-/* Day 1 / 2 / 3 switcher.
-   Each tab is a full painted card: day_tab_active.png (blue window + crystals) when
-   selected, day_tab_inactive.png (stone) otherwise. Both PNGs share the exact same
-   frame geometry, so one set of overlay coordinates aligns on both:
-     • WINDOW  (icon)  — centred, y ≈ 24%–68%
-     • NAMEPLATE (label) — centred, y ≈ 80%–92%
-   Cards carry ~21% transparent side-margin, so a negative horizontal margin pulls the
-   painted frames together into a continuous bar. */
+/* Day 1 / 2 / 3 switcher — a single connected stone bar (day_tabs_frame.png) with three
+   inset slot openings. A transparent <button> sits over each opening (positions measured
+   from the frame art). The selected slot is lit in place: blue window fill + gold inner
+   ring + violet crystal accent + a gold nameplate, so it matches the reference mockup
+   while staying one continuous bar (not three separate cards). */
+const SLOTS: { n: Day; cx: number; icon: string }[] = [
+  { n: 1, cx: 25.1, icon: "/images/day1_icon.png" },
+  { n: 2, cx: 50.6, icon: "/images/day2_icon.png" },
+  { n: 3, cx: 76.0, icon: "/images/day3_icon.png" },
+];
+const SLOT_W = 18.8; // slot width as % of the frame image
+
 function DayTabs({ activeDay, onChange }: DayTabsProps) {
-  const days: { n: Day; icon: string }[] = [
-    { n: 1, icon: "/images/day1_icon.png" },
-    { n: 2, icon: "/images/day2_icon.png" },
-    { n: 3, icon: "/images/day3_icon.png" },
-  ];
-
   return (
-    <div className="mx-auto flex w-[92%] max-w-[560px] items-center justify-center md:w-[64%]">
-      {days.map(({ n, icon }) => {
-        const active = n === activeDay;
-        return (
-          <button
-            key={n}
-            type="button"
-            onClick={() => onChange(n)}
-            aria-pressed={active}
-            aria-label={`Day ${n}`}
-            className={`relative aspect-[2722/1536] flex-1 transition-transform duration-200 focus:outline-none ${
-              active ? "z-[3] scale-[1.12]" : "z-[1] scale-[0.9] hover:scale-[0.94]"
-            }`}
-            style={{ marginInline: "-12%" }}
-          >
-            {/* Card frame (active = blue+crystals, inactive = stone) */}
-            <Image
-              src={active ? "/images/day_tab_active.png" : "/images/day_tab_inactive.png"}
-              alt={`Day ${n}${active ? " (selected)" : ""}`}
-              fill
-              priority={n === 1}
-              className="object-contain"
-              style={
-                active
-                  ? { filter: "drop-shadow(0 0 10px rgba(120,110,255,0.6)) drop-shadow(0 4px 8px rgba(0,0,0,0.45))" }
-                  : { filter: "grayscale(0.5) brightness(0.78) saturate(0.85)", opacity: 0.9 }
-              }
-            />
+    <div className="relative mx-auto w-[94%] max-w-[640px] md:w-[72%]">
+      <div className="relative w-full aspect-[2722/1536]">
+        {/* Connected stone/gold bar */}
+        <Image src="/images/day_tabs_frame.png" alt="Day selector" fill className="object-contain" priority />
 
-            {/* Icon — centred in the card's window opening */}
-            <span
-              className="pointer-events-none absolute flex items-center justify-center"
+        {SLOTS.map(({ n, cx, icon }) => {
+          const active = n === activeDay;
+          return (
+            <button
+              key={n}
+              type="button"
+              onClick={() => onChange(n)}
+              aria-pressed={active}
+              aria-label={`Day ${n}`}
+              className="absolute focus:outline-none"
               style={{
-                top: "26%",
-                height: "42%",
-                left: "27%",
-                right: "27%",
-                filter: active ? "none" : "grayscale(0.5) brightness(0.8)",
-                opacity: active ? 1 : 0.85,
+                left: `${cx - SLOT_W / 2}%`,
+                width: `${SLOT_W}%`,
+                top: "33%",
+                height: "34%",
+                zIndex: active ? 3 : 2,
               }}
             >
-              <SlotIcon src={icon} alt={`Day ${n} icon`} />
-            </span>
+              {/* Lit window (selected only) */}
+              {active && (
+                <span
+                  aria-hidden
+                  className="absolute inset-[3%] rounded-[16%]"
+                  style={{
+                    background:
+                      "radial-gradient(125% 125% at 50% 34%, #4356c4 0%, #2c3993 55%, #1b2568 100%)",
+                    boxShadow:
+                      "inset 0 0 0 4px #e9b84a, inset 0 0 0 7px rgba(120,80,20,0.5), inset 0 0 16px rgba(0,0,0,0.5), 0 0 14px rgba(139,92,246,0.5)",
+                  }}
+                />
+              )}
 
-            {/* Label — centred in the bottom nameplate */}
-            <span
-              className="pointer-events-none absolute flex items-center justify-center"
-              style={{ top: "80.5%", height: "11%", left: "30%", right: "30%" }}
-            >
+              {/* Icon */}
               <span
-                className="whitespace-nowrap font-extrabold uppercase leading-none tracking-wide text-[2.3vw] md:text-[0.85vw]"
+                className="pointer-events-none absolute flex items-center justify-center"
                 style={{
-                  color: active ? "#ffe08a" : "#c3b088",
-                  textShadow: "0 1px 2px rgba(0,0,0,0.6)",
+                  left: "14%",
+                  right: "14%",
+                  top: "5%",
+                  height: "58%",
+                  filter: active
+                    ? "drop-shadow(0 2px 3px rgba(0,0,0,0.45))"
+                    : "grayscale(0.35) brightness(0.92) drop-shadow(0 1px 2px rgba(0,0,0,0.3))",
+                  opacity: active ? 1 : 0.9,
                 }}
               >
-                Day {n}
+                <SlotIcon src={icon} alt={`Day ${n} icon`} />
               </span>
-            </span>
-          </button>
-        );
-      })}
+
+              {/* Crystal accent (selected only) — bottom-right of the slot */}
+              {active && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src="/images/day_crystals.png"
+                  alt=""
+                  aria-hidden
+                  className="pointer-events-none absolute"
+                  style={{ right: "-13%", bottom: "-9%", width: "46%", zIndex: 4 }}
+                />
+              )}
+
+              {/* Label */}
+              <span
+                className="pointer-events-none absolute inset-x-0 flex justify-center"
+                style={{ bottom: active ? "1%" : "7%", zIndex: 5 }}
+              >
+                {active ? (
+                  <span
+                    className="whitespace-nowrap rounded-[5px] px-[10%] py-[3%] text-[1.9vw] font-extrabold uppercase leading-none tracking-wide md:text-[0.72vw]"
+                    style={{
+                      color: "#4a2f12",
+                      background: "linear-gradient(#f6dc92, #e0b155)",
+                      boxShadow: "0 0 0 2px #b9862f, 0 1px 2px rgba(0,0,0,0.45)",
+                    }}
+                  >
+                    Day {n}
+                  </span>
+                ) : (
+                  <span
+                    className="whitespace-nowrap text-[2vw] font-extrabold uppercase leading-none tracking-wide md:text-[0.75vw]"
+                    style={{ color: "#ecdab2", textShadow: "0 1px 2px rgba(0,0,0,0.6)" }}
+                  >
+                    Day {n}
+                  </span>
+                )}
+              </span>
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
