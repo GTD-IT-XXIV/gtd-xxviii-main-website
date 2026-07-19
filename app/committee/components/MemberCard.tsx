@@ -32,20 +32,10 @@ export default function MemberCard({ member, index, topicIndex, onExpand }: Memb
       whileHover={{ y: -8, transition: { duration: 0.25 } }}
       whileTap={{ scale: 0.97 }}
     >
-      {/* ── Card frame (background layer) ── */}
-      <Image
-        src="/images/committee_card.png"
-        alt=""
-        fill
-        sizes="(max-width: 640px) 45vw, (max-width: 1024px) 28vw, 18vw"
-        className="object-contain pointer-events-none select-none"
-        draggable={false}
-      />
-
-      {/* ── Member photo (positioned inside the frame's parchment area) ── */}
+      {/* ── Member photo (background layer, sits behind the frame) ── */}
       <div
-        className="absolute overflow-hidden"
-        style={{ top: "20%", left: "25%", right: "25%", bottom: "30%" }}
+        className="absolute overflow-hidden rounded-lg"
+        style={{ top: "15%", left: "15%", right: "15%", bottom: "15%" }}
       >
         <Image
           src={member.first_image}
@@ -55,6 +45,16 @@ export default function MemberCard({ member, index, topicIndex, onExpand }: Memb
           className="object-cover scale-123"
         />
       </div>
+
+      {/* ── Card frame (foreground overlay, drawn on top of the photo) ── */}
+      <Image
+        src="/images/committee_card_frame.png"
+        alt=""
+        fill
+        sizes="(max-width: 640px) 45vw, (max-width: 1024px) 28vw, 18vw"
+        className="object-contain pointer-events-none select-none"
+        draggable={false}
+      />
 
       {/* ── Name on blue banner ── */}
       <div
@@ -105,54 +105,97 @@ export function ExpandedCard({ member, index, topicIndex, onClose }: ExpandedCar
         style={{ width: "min(400px, 90vw)", aspectRatio: "3 / 4.2" }}
         onClick={onClose}
       >
-        {/* ── Card frame ── */}
+        {/* ── Member photo (background layer, sits behind the frame) ── */}
+        <div
+          className="absolute overflow-hidden rounded-lg"
+          style={{ top: "15%", left: "15%", right: "15%", bottom: "15%" }}
+        >
+          <Image
+            src={member.second_image}
+            alt={member.name}
+            fill
+            sizes="(max-width: 640px) 35vw, (max-width: 1024px) 22vw, 14vw"
+            className="object-cover scale-123"
+          />
+        </div>
+
+        {/* ── Card frame (foreground overlay, drawn on top of the photo) ── */}
         <Image
-          src="/images/committee_card.png"
+          src="/images/committee_card_frame.png"
           alt=""
           fill
-          sizes="340px"
+          sizes="(max-width: 640px) 45vw, (max-width: 1024px) 28vw, 18vw"
           className="object-contain pointer-events-none select-none"
           draggable={false}
         />
 
-        {/* ── Second image (top portion of parchment area) ── */}
-        <div
-          className="absolute overflow-hidden"
-          style={{ top: "20%", left: "25%", right: "25%", height: "40%" }}
-        >
-          <Image
-            src={member.second_image}
-            alt={member.full_name}
-            fill
-            sizes="260px"
-            className="object-cover scale-130"
-          />
-        </div>
-
-        {/* ── Detail text (below photo, in parchment area) ── */}
-        <div
-          className="absolute flex flex-col items-center justify-center gap-1"
-          style={{ top: "65%", left: "13%", right: "13%", bottom: "30%" }}
-        >
-          <span className="expanded-detail-text text-stone-900 text-base sm:text-lg md:text-lg font-bold text-center leading-tight">
-            {member.full_name}
-          </span>
-          <span className="expanded-detail-text text-stone-800 text-xs sm:text-sm md:text-base text-center">
-            {member.year_course}
-          </span>
-          <span className="expanded-detail-text text-stone-800 text-xs sm:text-sm md:text-base text-center">
-            {member.og}
-          </span>
-        </div>
-
-        {/* ── Banner area (bottom) ── */}
+        {/* ── Name on blue banner ── */}
         <div
           className="absolute left-0 right-0 flex items-center justify-center"
-          style={{ bottom: "9%", height: "11%" }}
-        />
+          style={{ bottom: "17.5%", height: "7%" }}
+        >
+          <span className="card-banner-text text-white text-[20px] sm:text-md md:text-xl font-bold truncate px-4">
+            {member.name}
+          </span>
+        </div>
+
+          {/* ── Banner area (bottom) ── */}
+          <div
+            className="absolute left-0 right-0 flex items-center justify-center"
+            style={{ bottom: "9%", height: "11%" }}
+          />
 
         <Sparkles />
       </motion.div>
+      {/* ── Status card (next to the member card) ── */}
+        <div
+          className="relative flex-shrink-0"
+          style={{ width: "min(340px, 42vw)", aspectRatio: "3 / 4.2" }}
+        >
+          {/* Status card background image */}
+          <Image
+            src="/images/status_card.png"
+            alt=""
+            fill
+            sizes="(max-width: 640px) 30vw, 260px"
+            className="object-contain pointer-events-none select-none"
+            draggable={false}
+          />
+
+          {/* Text aligned to each icon row on the status card */}
+          <div className="absolute inset-0" style={{ fontFamily: "'Inter', sans-serif" }}>
+            <span
+              className="expanded-detail-text absolute text-white text-sm sm:text-base md:text-lg font-bold leading-tight truncate"
+              style={{ top: "24.5%", left: "22.5%", right: "10%" }}
+            >
+              Full Name
+            </span>
+            <span
+              className="expanded-detail-text absolute text-white text-sm sm:text-base md:text-lg font-bold leading-tight truncate"
+              style={{ top: "33%", left: "17%", right: "15%" }}
+            >
+              {member.full_name}
+            </span>
+            <span
+              className="expanded-detail-text absolute text-white text-sm sm:text-base md:text-lg font-bold leading-tight truncate"
+              style={{ top: "44%", left: "22%", right: "10%" }}
+            >
+              Course/Year
+            </span>
+            <span
+              className="expanded-detail-text absolute text-white text-sm sm:text-base md:text-lg font-bold leading-tight truncate"
+              style={{ top: "59%", left: "17%", right: "10%" }}
+            >
+              {member.year_course}
+            </span>
+            <span
+              className="expanded-detail-text absolute text-white text-sm sm:text-base md:text-lg font-bold leading-tight truncate"
+              style={{ top: "70.5%", left: "22.5%", right: "10%" }}
+            >
+              {member.og}
+            </span>
+          </div>
+        </div>
     </motion.div>
   );
 }
