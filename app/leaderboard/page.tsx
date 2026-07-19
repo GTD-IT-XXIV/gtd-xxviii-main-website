@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 interface Player {
@@ -218,6 +219,26 @@ function toList(x: any): Player[] {
   return Array.isArray(x) ? x : x.values ?? x.data ?? [];
 }
 
+/* Sorts by Score (desc) and recomputes Rank — ties share a rank, next rank skips
+   accordingly (standard competition ranking), so the board reflects actual points
+   rather than whatever order/Rank the API happened to send. */
+function rankByScore(list: Player[]): Player[] {
+  const sorted = [...list].sort((a, b) => b.Score - a.Score);
+  let rank = 0;
+  let prevScore: number | null = null;
+  return sorted.map((p, i) => {
+    if (prevScore === null || p.Score !== prevScore) {
+      rank = i + 1;
+      prevScore = p.Score;
+    }
+    return { ...p, Rank: rank };
+  });
+}
+
+function rankAll(out: Record<Day, Player[]>): Record<Day, Player[]> {
+  return { 1: rankByScore(out[1]), 2: rankByScore(out[2]), 3: rankByScore(out[3]) };
+}
+
 function bucketByDay(data: any): Record<Day, Player[]> {
   const out: Record<Day, Player[]> = { 1: [], 2: [], 3: [] };
   if (!data) return out;
@@ -228,7 +249,7 @@ function bucketByDay(data: any): Record<Day, Player[]> {
     out[1] = toList(keyed(1));
     out[2] = toList(keyed(2));
     out[3] = toList(keyed(3));
-    return out;
+    return rankAll(out);
   }
 
   const list = toList(Array.isArray(data) ? data : data.values ?? data.data ?? []);
@@ -238,11 +259,11 @@ function bucketByDay(data: any): Record<Day, Player[]> {
       const d = Number((p as any).Day ?? (p as any).day) as Day;
       if (d === 1 || d === 2 || d === 3) out[d].push(p);
     }
-    return out;
+    return rankAll(out);
   }
 
   out[1] = list;
-  return out;
+  return rankAll(out);
 }
 
 export default function Page() {
@@ -290,11 +311,31 @@ export default function Page() {
   const restRows = rankingList.slice(3);
 
   return (
-    <div className="relative min-h-screen w-screen overflow-hidden">
+    <div className="relative min-h-screen w-screen overflow-hidden bg-black">
       <div
-        className="absolute inset-0 bg-cover bg-center opacity-60 md:opacity-100"
+        className="absolute inset-0 bg-cover bg-center opacity-60"
         style={{ backgroundImage: "url('/images/leaderboard_bg.png')" }}
       />
+
+      <Link
+        href="/?map=1"
+        className="home-button absolute top-4 left-4 z-30 w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-stone-800/70 border-2 border-amber-500/50 flex items-center justify-center text-white hover:bg-stone-700/80"
+        aria-label="Back to map"
+      >
+        <svg
+          width="22"
+          height="22"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+          <polyline points="9 22 9 12 15 12 15 22" />
+        </svg>
+      </Link>
 
       <div className="relative flex min-h-screen w-screen items-start justify-center pt-10 pb-10 md:pt-14">
         <div className="relative w-[96vw] max-w-[900px] md:w-[80vw] text-[#5c3a1e]">

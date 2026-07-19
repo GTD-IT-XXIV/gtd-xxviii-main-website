@@ -58,22 +58,22 @@ const locations = [
   { id: 8, name: "Events",      x: 20, y: 72, mx: 26, my: 90, color: "teal",   emoji: "🎉", href: "/event",        houseKey: null },
 ];
 
-const HOUSE_DATA: Record<string, { name: string; gls: string[] }[]> = {
+const HOUSE_DATA: Record<string, { name: string; gls: string[]; image: string }[]> = {
   Dulcia:  [
-    { name: "OG 1", gls: ["GL Name", "GL Name"] },
-    { name: "OG 2", gls: ["GL Name", "GL Name"] },
+    { name: "OG 1", gls: ["Mikael Ernest Susanto", "Jenica Avela Setiawan"], image: "/images/houses/og/1.jpg" },
+    { name: "OG 2", gls: ["Kenneth Joshua", "Annabelle Qetsyah Putri Setyawan"], image: "/images/houses/og/2.jpg" },
   ],
   Ignara:  [
-    { name: "OG 5", gls: ["GL Name", "GL Name"] },
-    { name: "OG 6", gls: ["GL Name", "GL Name"] },
+    { name: "OG 5", gls: ["Panji Andika Saputra Wijaya", "Alkheisya Nabila Stavina"], image: "/images/houses/og/5.jpg" },
+    { name: "OG 6", gls: ["Azzam Harzuqi", "Amelia Chantiqa Dewi"], image: "/images/houses/og/6.jpg" },
   ],
   Avelis:  [
-    { name: "OG 3", gls: ["GL Name", "GL Name"] },
-    { name: "OG 4", gls: ["GL Name", "GL Name"] },
+    { name: "OG 3", gls: ["Dhammanananda Justin Yu", "Farra Iva Karjadhi"], image: "/images/houses/og/3.jpg" },
+    { name: "OG 4", gls: ["Jay Riva Opi", "Vania Jovelyn Nando"], image: "/images/houses/og/4.jpg" },
   ],
   Wygrove: [
-    { name: "OG 7", gls: ["GL Name", "GL Name"] },
-    { name: "OG 8", gls: ["GL Name", "GL Name"] },
+    { name: "OG 7", gls: ["Marcellino Grant Hadisiswoyo", "Kevina Arin Lucetta"], image: "/images/houses/og/7.jpg" },
+    { name: "OG 8", gls: ["Ignatius Jovan Liem", "Olga Adelaine Kosasih"], image: "/images/houses/og/8.jpg" },
   ],
 };
 
@@ -588,7 +588,9 @@ export default function Home() {
                 );
               })}
             </div>
-            <a href="/"
+            <a href="https://forms.gle/qs5iAPJgFSy9APbH7"
+              target="_blank"
+              rel="noopener noreferrer"
               className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 inline-block px-8 py-4 rounded-full bg-black hover:bg-white hover:text-black text-white text-sm font-semibold tracking-wider uppercase shadow-lg backdrop-blur-sm border border-white/25 transition-all duration-200 hover:scale-105"
               style={{ fontFamily: "Pixel, UncialAntiqua, serif", textShadow: "0 2px 8px rgba(0,0,0,0.4)" }}>
               REGISTER NOW
@@ -612,7 +614,9 @@ export default function Home() {
               <p className="text-sky-200 text-xs tracking-wider mt-1">
                 {selectedLoc ? `✈ Traveling to ${selectedLoc.name}…` : "Tap a region to begin your adventure"}
               </p>
-              <a href="/"
+              <a href="https://forms.gle/qs5iAPJgFSy9APbH7"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="pointer-events-auto inline-block mt-3 px-5 py-2 rounded-full bg-black hover:bg-amber-400 text-white text-sm font-semibold tracking-wider uppercase shadow-lg backdrop-blur-sm border border-white/25 transition-all duration-200 hover:scale-105"
                 style={{ fontFamily: "Pixel, UncialAntiqua, serif", textShadow: "0 2px 8px rgba(0,0,0,0.4)" }}>
                 REGISTER NOW

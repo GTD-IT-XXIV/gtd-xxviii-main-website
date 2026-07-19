@@ -56,6 +56,7 @@ export default function SponsorsSection() {
           <div className="flex flex-wrap items-center justify-center gap-10">
             <LogoL src="/images/sponsors/logo KBRI.jpeg" alt="Embassy of the Republic of Indonesia in Singapore" />
             <LogoL src="/images/sponsors/logo PINTU.png" alt="Pintu" />
+            <LogoL src="/images/sponsors/PPIS Singapura.png" alt="PPI Singapura" />
           </div>
         </div>
 
