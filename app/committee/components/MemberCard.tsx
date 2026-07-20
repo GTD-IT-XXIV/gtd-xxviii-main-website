@@ -103,7 +103,7 @@ export function ExpandedCard({ member, index, topicIndex, onClose }: ExpandedCar
 
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-0 overflow-y-auto py-8 sm:py-0"
+      className="fixed inset-0 z-50 flex flex-col sm:flex-row items-center justify-start sm:justify-center gap-3 sm:gap-0 overflow-y-auto py-6 sm:py-0"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}

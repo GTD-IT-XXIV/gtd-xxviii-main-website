@@ -715,14 +715,14 @@ export const committeeTopics: CommitteeTopic[] = [
     first_image: "/images/committee/welfare/JANICE1.jpg",
     second_image: "/images/committee/welfare/JANICE2.jpg",
   },
-  {
-    name: "Jonathan",
-    full_name: "Jonathan Alfonso Tarman",
-    year_course: "ROBOTICS/2",
-    og: "OG 3",
-    first_image: "/images/committee/welfare/JONATHAN1.jpg",
-    second_image: "/images/committee/welfare/JONATHAN2.jpg",
-  },
+  //{
+    //name: "Jonathan",
+    //full_name: "Jonathan Alfonso Tarman",
+    //year_course: "ROBOTICS/2",
+    //og: "OG 3",
+    //first_image: "/images/committee/welfare/JONATHAN1.jpg",
+    //second_image: "/images/committee/welfare/JONATHAN2.jpg",
+  //},
   {
     name: "Kristania",
     full_name: "Kristania Liman",

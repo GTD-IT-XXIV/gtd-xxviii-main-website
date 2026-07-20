@@ -269,14 +269,6 @@ export default function Home() {
     setJakePos({ x: loc.x - 3.5, y: loc.y });
   }
 
-  function handleMobileSelect(e: React.MouseEvent, loc: (typeof locations)[0]) {
-    if (loc.href === "/") {
-      // No dedicated page for this island — just select it, don't navigate/reload
-      e.preventDefault();
-    }
-    handleSelect(loc);
-  }
-
   function resetStoryline() {
     setClimbDone(false);
     setClimbProgress(0);
@@ -317,9 +309,12 @@ export default function Home() {
       }
 
       // Launch from Finn's current spot: map centre on the first trip, or the
-      // island he's already standing on.
+      // island he's already standing on. Mobile uses the mx/my pin coordinates
+      // (the mobile map has its own layout), desktop uses x/y.
       const current = locations.find((l) => l.id === selectedId);
-      const from: CharPos = current ? { x: current.x, y: current.y } : MAP_CENTER;
+      const from: CharPos = current
+        ? { x: isMobile ? current.mx : current.x, y: isMobile ? current.my : current.y }
+        : MAP_CENTER;
 
       const start = performance.now();
       setFlight({ loc, from, t: 0 });
@@ -336,7 +331,7 @@ export default function Home() {
       };
       flightRaf.current = requestAnimationFrame(step);
     },
-    [flight, selectedId, router],
+    [flight, selectedId, router, isMobile],
   );
 
   // Stop the tween if the page unmounts mid-flight (e.g. the router.push lands).
@@ -387,9 +382,11 @@ export default function Home() {
   const flightPos = flight
     ? (() => {
         const e = easeInOutQuad(flight.t);
+        const toX = isMobile ? flight.loc.mx : flight.loc.x;
+        const toY = isMobile ? flight.loc.my : flight.loc.y;
         return {
-          x: lerp(flight.from.x, flight.loc.x, e),
-          y: lerp(flight.from.y, flight.loc.y, e) - FLIGHT_ARC * arc(e),
+          x: lerp(flight.from.x, toX, e),
+          y: lerp(flight.from.y, toY, e) - FLIGHT_ARC * arc(e),
         };
       })()
     : null;
@@ -452,7 +449,7 @@ export default function Home() {
   // Face the direction they're weaving up the path; keep that facing through the
   // jump. While flying, face the island being travelled to.
   const facingRight = flight
-    ? flight.loc.x >= flight.from.x
+    ? (isMobile ? flight.loc.mx : flight.loc.x) >= flight.from.x
     : walking
     ? trailX(climbProgress) >= trailX(Math.max(0, climbProgress - 0.005))
     : trailX(WALK_END) >= trailX(WALK_END - 0.005);
@@ -638,7 +635,7 @@ export default function Home() {
                         setTimeout(() => setOpenHouse(loc.houseKey), 800);
                         return;
                       }
-                      handleMobileSelect(e, loc);
+                      startFlight(e, loc);
                     }}
                     className="absolute -translate-x-1/2 -translate-y-1/2 group flex flex-col items-center z-20"
                     style={{ left: `${loc.mx}%`, top: `${loc.my}%` }}>

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface Player {
   Rank: number;
@@ -109,12 +110,40 @@ const SLOTS: { n: Day; cx: number; icon: string }[] = [
 ];
 const SLOT_W = 18.8; // slot width as % of the frame image
 
+// The lit window's fill is inset 1% (of the slot width/height) from the slot
+// bounds on each side — matches the button's old per-slot inset so the purple
+// fill still sits flush inside the stone opening.
+const WINDOW_W = SLOT_W * 0.98;
+const WINDOW_TOP = "40.04%";
+const WINDOW_HEIGHT = "21.68%";
+
 function DayTabs({ activeDay, onChange }: DayTabsProps) {
+  const activeCx = SLOTS.find((s) => s.n === activeDay)!.cx;
+
   return (
     <div className="relative mx-auto w-[70%] max-w-[480px] md:w-[54%]">
       <div className="relative w-full aspect-[2722/1536]">
         {/* Connected stone/gold bar */}
         <Image src="/images/day_tabs_frame.png" alt="Day selector" fill className="object-contain" priority />
+
+        {/* Lit window — a single element that slides between slots, so switching
+            tabs reads as a clear, continuous motion instead of an instant swap. */}
+        <motion.span
+          aria-hidden
+          className="absolute rounded-[10%]"
+          style={{
+            top: WINDOW_TOP,
+            height: WINDOW_HEIGHT,
+            width: `${WINDOW_W}%`,
+            zIndex: 1,
+            background: "radial-gradient(125% 125% at 50% 34%, #4356c4 0%, #2c3993 55%, #1b2568 100%)",
+            boxShadow:
+              "inset 0 0 0 4px #e9b84a, inset 0 0 0 7px rgba(120,80,20,0.5), inset 0 0 16px rgba(0,0,0,0.5), 0 0 14px rgba(139,92,246,0.5)",
+          }}
+          initial={false}
+          animate={{ left: `${activeCx - WINDOW_W / 2}%` }}
+          transition={{ type: "spring", stiffness: 280, damping: 28 }}
+        />
 
         {SLOTS.map(({ n, cx, icon }) => {
           const active = n === activeDay;
@@ -131,26 +160,12 @@ function DayTabs({ activeDay, onChange }: DayTabsProps) {
                 width: `${SLOT_W}%`,
                 top: "33%",
                 height: "34%",
-                zIndex: active ? 3 : 2,
+                zIndex: 2,
               }}
             >
-              {/* Lit window (selected only) */}
-              {active && (
-                <span
-                  aria-hidden
-                  className="absolute inset-[3%] rounded-[16%]"
-                  style={{
-                    background:
-                      "radial-gradient(125% 125% at 50% 34%, #4356c4 0%, #2c3993 55%, #1b2568 100%)",
-                    boxShadow:
-                      "inset 0 0 0 4px #e9b84a, inset 0 0 0 7px rgba(120,80,20,0.5), inset 0 0 16px rgba(0,0,0,0.5), 0 0 14px rgba(139,92,246,0.5)",
-                  }}
-                />
-              )}
-
               {/* Icon */}
               <span
-                className="pointer-events-none absolute flex items-center justify-center"
+                className="pointer-events-none absolute flex items-center justify-center transition-[filter,opacity] duration-300 ease-out"
                 style={{
                   left: "14%",
                   right: "14%",
@@ -165,21 +180,20 @@ function DayTabs({ activeDay, onChange }: DayTabsProps) {
                 <SlotIcon src={icon} alt={`Day ${n} icon`} />
               </span>
 
-              {/* Crystal accent (selected only) — bottom-right of the slot */}
-              {active && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src="/images/day_crystals.png"
-                  alt=""
-                  aria-hidden
-                  className="pointer-events-none absolute"
-                  style={{ right: "-13%", bottom: "-9%", width: "46%", zIndex: 4 }}
-                />
-              )}
+              {/* Crystal accent (selected only) — bottom-right of the slot.
+                  Always mounted, fades in/out so it doesn't just pop on switch. */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/images/day_crystals.png"
+                alt=""
+                aria-hidden
+                className="pointer-events-none absolute transition-opacity duration-300 ease-out"
+                style={{ right: "-13%", bottom: "-9%", width: "46%", zIndex: 4, opacity: active ? 1 : 0 }}
+              />
 
               {/* Label */}
               <span
-                className="pointer-events-none absolute inset-x-0 flex justify-center"
+                className="pointer-events-none absolute inset-x-0 flex justify-center transition-[bottom] duration-300 ease-out"
                 style={{ bottom: active ? "1%" : "7%", zIndex: 5 }}
               >
                 {active ? (
@@ -368,117 +382,127 @@ export default function Page() {
               <DayTabs activeDay={activeDay} onChange={setActiveDay} />
             </div>
 
-            {rankingList.length === 0 ? (
-              <div className="mt-20 text-center text-white/80 tracking-widest text-sm md:mt-6">
-                No rankings for Day {activeDay} yet
-              </div>
-            ) : (
-              <div className="relative mt-20 aspect-[1320/880] w-full text-[2.1vw] md:mt-6 md:text-[0.8vw] font-extrabold">
-                {/* Podium + winner cards — the whole group is shrunk (w-[88%]) and nudged
-                    down (top-[8%]) so the 1st-place card doesn't run off the top. Card
-                    positions below are relative to THIS wrapper, so they track the podium. */}
-                <div className="absolute left-1/2 top-[2%] z-[1] w-[152%] md:top-[11%] md:w-[76%] -translate-x-1/2">
-                  <div className="relative aspect-[1536/1024]">
-                    {/* Podium background */}
-                    <Image src="/images/podium.png" alt="Podium" fill className="object-contain" />
-
-                    {/* 1st / 2nd / 3rd — each anchored by its BOTTOM so the card base sits
-                        on the flat top of its podium block. bottom = 100% − podium-top%. */}
-                    {second && (
-                      <PodiumCard
-                        frameSrc="/images/leaderboard_2.png"
-                        photoSrc="/images/logo.png"
-                        name={second.Name}
-                        score={second.Score}
-                        bottom="57.5%"
-                        left="16.5%"
-                        width="27%"
-                      />
-                    )}
-
-                    {first && (
-                      <PodiumCard
-                        frameSrc="/images/leaderboard_3.png"
-                        photoSrc="/images/logo.png"
-                        name={first.Name}
-                        score={first.Score}
-                        bottom="72.5%"
-                        left="34.4%"
-                        width="31%"
-                        borderColor="#fbbf24"
-                      />
-                    )}
-
-                    {third && (
-                      <PodiumCard
-                        frameSrc="/images/leaderboard_1.png"
-                        photoSrc="/images/logo.png"
-                        name={third.Name}
-                        score={third.Score}
-                        bottom="50.5%"
-                        right="20%"
-                        width="23%"
-                        borderColor="#98683C"
-                      />
-                    )}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeDay}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.25, ease: "easeOut" }}
+              >
+                {rankingList.length === 0 ? (
+                  <div className="mt-20 text-center text-white/80 tracking-widest text-sm md:mt-6">
+                    No rankings for Day {activeDay} yet
                   </div>
-                </div>
+                ) : (
+                  <div className="relative mt-20 aspect-[1320/880] w-full text-[2.1vw] md:mt-6 md:text-[0.8vw] font-extrabold">
+                    {/* Podium + winner cards — the whole group is shrunk (w-[88%]) and nudged
+                        down (top-[8%]) so the 1st-place card doesn't run off the top. Card
+                        positions below are relative to THIS wrapper, so they track the podium. */}
+                    <div className="absolute left-1/2 top-[2%] z-[1] w-[152%] md:top-[11%] md:w-[76%] -translate-x-1/2">
+                      <div className="relative aspect-[1536/1024]">
+                        {/* Podium background */}
+                        <Image src="/images/podium.png" alt="Podium" fill className="object-contain" />
 
-                {/* Ranking List (rank 4+) — uses ranking_list_crop.png (tightly cropped to
-                    the board art, aspect 1668/775). object-contain shows the WHOLE board
-                    with no top/bottom cropping. */}
-                <div className="absolute bottom-[-66%] left-[49%] z-[3] w-[100%] md:bottom-[-2%] md:left-1/2 md:w-[66%] -translate-x-1/2 text-[#243158]">
-                  <div className="relative aspect-[1668/775]">
-                    <Image src="/images/ranking_list_crop.png" alt="Ranking list" fill className="object-contain" />
+                        {/* 1st / 2nd / 3rd — each anchored by its BOTTOM so the card base sits
+                            on the flat top of its podium block. bottom = 100% − podium-top%. */}
+                        {second && (
+                          <PodiumCard
+                            frameSrc="/images/leaderboard_2.png"
+                            photoSrc="/images/logo.png"
+                            name={second.Name}
+                            score={second.Score}
+                            bottom="57.5%"
+                            left="16.5%"
+                            width="27%"
+                          />
+                        )}
 
-                    {/* Header row — sits in the blue strip, so text is white */}
-                    <div
-                      className="absolute flex items-center text-[2vw] md:text-[0.8vw] font-bold uppercase tracking-wider text-white"
-                      style={{ top: "8%", left: "6%", right: "6%" }}
-                    >
-                      <span className="w-[8%] shrink-0 text-center">Rank</span>
-                      <span className="flex-1 pl-[10%]">OG Name</span>
-                      <span className="shrink-0 pr-[2%]">Points</span>
+                        {first && (
+                          <PodiumCard
+                            frameSrc="/images/leaderboard_3.png"
+                            photoSrc="/images/logo.png"
+                            name={first.Name}
+                            score={first.Score}
+                            bottom="72.5%"
+                            left="34.4%"
+                            width="31%"
+                            borderColor="#fbbf24"
+                          />
+                        )}
+
+                        {third && (
+                          <PodiumCard
+                            frameSrc="/images/leaderboard_1.png"
+                            photoSrc="/images/logo.png"
+                            name={third.Name}
+                            score={third.Score}
+                            bottom="50.5%"
+                            right="20%"
+                            width="23%"
+                            borderColor="#98683C"
+                          />
+                        )}
+                      </div>
                     </div>
 
-                    {/* Rows — evenly distributed to sit on the board's printed rule lines */}
-                    <div
-                      className="absolute flex flex-col justify-between text-[2.2vw] md:text-[0.85vw]"
-                      style={{ top: "19.5%", bottom: "8.5%", left: "6%", right: "6%" }}
-                    >
-                      {restRows.length === 0 && (
-                        <p className="text-center opacity-60">No more teams yet</p>
-                      )}
-                      {restRows.map((player, i) => (
+                    {/* Ranking List (rank 4+) — uses ranking_list_crop.png (tightly cropped to
+                        the board art, aspect 1668/775). object-contain shows the WHOLE board
+                        with no top/bottom cropping. */}
+                    <div className="absolute bottom-[-66%] left-[49%] z-[3] w-[100%] md:bottom-[-2%] md:left-1/2 md:w-[66%] -translate-x-1/2 text-[#243158]">
+                      <div className="relative aspect-[1668/775]">
+                        <Image src="/images/ranking_list_crop.png" alt="Ranking list" fill className="object-contain" />
+
+                        {/* Header row — sits in the blue strip, so text is white */}
                         <div
-                          key={`${player.Rank}-${player.Name}-${i}`}
-                          className="flex items-center"
+                          className="absolute flex items-center text-[2vw] md:text-[0.8vw] font-bold uppercase tracking-wider text-white"
+                          style={{ top: "8%", left: "6%", right: "6%" }}
                         >
-                          <span className="w-[8%] shrink-0 text-center">{player.Rank}</span>
-                          <span className="flex flex-1 items-center gap-[3%] pl-[2%]">
-                            {/* Round team avatar (logo placeholder) */}
-                            <span className="aspect-square h-[2.2em] shrink-0 overflow-hidden rounded-full bg-white ring-1 ring-white/60">
-                              <Image
-                                src="/images/logo.png"
-                                alt={`${player.Name} team`}
-                                width={80}
-                                height={80}
-                                className="h-full w-full object-cover"
-                              />
-                            </span>
-                            <span className="min-w-0 flex-1 truncate">{player.Name}</span>
-                          </span>
-                          <span className="flex shrink-0 items-center gap-[0.4em] whitespace-nowrap pr-[2%]">
-                            <span className="text-[#f5b301]">⭐</span>
-                            {player.Score.toLocaleString()} pts
-                          </span>
+                          <span className="w-[8%] shrink-0 text-center">Rank</span>
+                          <span className="flex-1 pl-[10%]">OG Name</span>
+                          <span className="shrink-0 pr-[2%]">Points</span>
                         </div>
-                      ))}
+
+                        {/* Rows — evenly distributed to sit on the board's printed rule lines */}
+                        <div
+                          className="absolute flex flex-col justify-between text-[2.2vw] md:text-[0.85vw]"
+                          style={{ top: "19.5%", bottom: "8.5%", left: "6%", right: "6%" }}
+                        >
+                          {restRows.length === 0 && (
+                            <p className="text-center opacity-60">No more teams yet</p>
+                          )}
+                          {restRows.map((player, i) => (
+                            <div
+                              key={`${player.Rank}-${player.Name}-${i}`}
+                              className="flex items-center"
+                            >
+                              <span className="w-[8%] shrink-0 text-center">{player.Rank}</span>
+                              <span className="flex flex-1 items-center gap-[3%] pl-[2%]">
+                                {/* Round team avatar (logo placeholder) */}
+                                <span className="aspect-square h-[2.2em] shrink-0 overflow-hidden rounded-full bg-white ring-1 ring-white/60">
+                                  <Image
+                                    src="/images/logo.png"
+                                    alt={`${player.Name} team`}
+                                    width={80}
+                                    height={80}
+                                    className="h-full w-full object-cover"
+                                  />
+                                </span>
+                                <span className="min-w-0 flex-1 truncate">{player.Name}</span>
+                              </span>
+                              <span className="flex shrink-0 items-center gap-[0.4em] whitespace-nowrap pr-[2%]">
+                                <span className="text-[#f5b301]">⭐</span>
+                                {player.Score.toLocaleString()} pts
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-            )}
+                )}
+              </motion.div>
+            </AnimatePresence>
           </>
         )}
       </div>
