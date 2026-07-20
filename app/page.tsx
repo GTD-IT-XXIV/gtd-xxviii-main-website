@@ -28,8 +28,24 @@ const TRAIL_WAYPOINTS: { p: number; x: number }[] = [
   { p: 1.00, x: 50 },
 ];
 
-function trailX(p: number) {
-  const pts = TRAIL_WAYPOINTS;
+// Mobile-only copy of TRAIL_WAYPOINTS. The path's wrapping container is widened
+// on mobile (-50%..150%, see the path.png layer) so object-cover shows the full
+// image without cropping it — that stretches the image horizontally versus the
+// viewport, so the desktop waypoints don't land on the painted trail. Same
+// p/x shape as TRAIL_WAYPOINTS; tune the x values by eye against the mobile path.
+const TRAIL_WAYPOINTS_MOBILE: { p: number; x: number }[] = [
+  { p: 0.00, x: 50 },
+  { p: 0.02, x: 40 },
+  { p: 0.11, x: 66 },
+  { p: 0.23, x: 30 },
+  { p: 0.33, x: 72 },
+  { p: 0.43, x: 44 },
+  { p: 0.49, x: 72 },
+  { p: 0.55, x: 50 },
+  { p: 1.00, x: 50 },
+];
+
+function trailXThrough(pts: { p: number; x: number }[], p: number) {
   for (let i = 0; i < pts.length - 1; i++) {
     const a = pts[i];
     const b = pts[i + 1];
@@ -39,6 +55,10 @@ function trailX(p: number) {
     }
   }
   return pts[pts.length - 1].x;
+}
+
+function trailX(p: number, mobile: boolean) {
+  return trailXThrough(mobile ? TRAIL_WAYPOINTS_MOBILE : TRAIL_WAYPOINTS, p);
 }
 
 const STORYLINE = [
@@ -224,6 +244,13 @@ export default function Home() {
     window.addEventListener("scroll", holdFloor, { passive: true });
     return () => window.removeEventListener("scroll", holdFloor);
   }, [climbDone]);
+
+  // Once Finn lands, scrolling back up is locked to the floor — on desktop that
+  // makes the still-visible scrollbar look stuck/broken, so hide it there.
+  useEffect(() => {
+    document.documentElement.classList.toggle("hide-scrollbar", climbDone && !isMobile);
+    return () => document.documentElement.classList.remove("hide-scrollbar");
+  }, [climbDone, isMobile]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -470,8 +497,8 @@ export default function Home() {
   const climbersLeft = flightPos ? flightPos.x
     : houseWalkPos ? houseWalkPos.x
     : travelTarget ? (isMobile ? travelTarget.mx : travelTarget.x)
-    : walking ? trailX(climbProgress)
-    : lerp(trailX(WALK_END), MAP_CENTER.x, flightEased);
+    : walking ? trailX(climbProgress, isMobile)
+    : lerp(trailX(WALK_END, isMobile), MAP_CENTER.x, flightEased);
   const traveled = travelTarget !== undefined;
 
   // ── Which sprite + frame to show ──
@@ -536,8 +563,8 @@ export default function Home() {
         ? houseWalk.via.x >= houseWalk.from.x
         : houseWalk.to.x >= houseWalk.via.x)
     : walking
-    ? trailX(climbProgress) >= trailX(Math.max(0, climbProgress - 0.005))
-    : trailX(WALK_END) >= trailX(WALK_END - 0.005);
+    ? trailX(climbProgress, isMobile) >= trailX(Math.max(0, climbProgress - 0.005), isMobile)
+    : trailX(WALK_END, isMobile) >= trailX(WALK_END - 0.005, isMobile);
 
   const para0 = windowOpacity(climbProgress, 0.055, 0.285, 0.07);
   const para1 = windowOpacity(climbProgress, 0.282  , 0.455, 0.07);

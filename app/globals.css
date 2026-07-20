@@ -84,3 +84,16 @@ body {
 img {
   image-rendering: crisp-edges;
 }
+
+/* ── Hide the scrollbar once Finn lands on desktop ──
+   Scrolling itself stays active (footer is still reachable); only the
+   visible track is hidden so the floor-locked "can't scroll up" state
+   doesn't read as a broken scrollbar. */
+.hide-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* legacy Edge/IE */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Chromium Edge */
+}
