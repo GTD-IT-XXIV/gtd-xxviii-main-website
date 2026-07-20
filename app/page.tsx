@@ -609,33 +609,33 @@ export default function Home() {
             {/* Title */}
             <div
               className="absolute left-1/2 -translate-x-1/2 z-10 text-center pointer-events-none"
-              style={{ top: "max(2.5rem, calc(env(safe-area-inset-top) + 1.5rem))" }}
+              style={{ top: "max(1.5rem, calc(env(safe-area-inset-top) + 0.75rem))" }}
             >
-              <div className="flex items-center justify-center gap-2">
+              <div className="flex items-center justify-center gap-1.5">
                 <Image
                   src="/images/aeterna_logo.PNG"
                   alt="Aeterna logo"
-                  width={36}
-                  height={36}
+                  width={26}
+                  height={26}
                   className="object-contain select-none flex-shrink-0"
                   style={{ filter: "drop-shadow(0 2px 12px rgba(0,0,0,0.55))" }}
                 />
-                <h1 className="text-3xl font-bold tracking-widest text-white uppercase"
+                <h1 className="text-xl font-bold tracking-widest text-white uppercase"
                   style={{ textShadow: "0 2px 12px rgba(0,0,0,0.55)" }}>
                   GTD XXVIII
                 </h1>
               </div>
-              <h2 className="text-6xl font-bold tracking-widest text-white uppercase mt-1"
+              <h2 className="text-4xl font-bold tracking-widest text-white uppercase leading-tight"
                 style={{ fontFamily: "AdventureTime, UncialAntiqua, serif", textShadow: "0 2px 12px rgba(0,0,0,0.55)" }}>
                 AETERNA
               </h2>
-              <p className="text-sky-200 text-xs tracking-wider mt-1">
+              <p className="text-sky-200 text-[11px] tracking-wider mt-0.5">
                 {selectedLoc ? `✈ Traveling to ${selectedLoc.name}…` : "Tap a region to begin your adventure"}
               </p>
               <a href="https://forms.gle/qs5iAPJgFSy9APbH7"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="pointer-events-auto inline-block mt-3 px-5 py-2 rounded-full bg-black hover:bg-amber-400 text-white text-sm font-semibold tracking-wider uppercase shadow-lg backdrop-blur-sm border border-white/25 transition-all duration-200 hover:scale-105"
+                className="pointer-events-auto inline-block mt-2 px-4 py-1.5 rounded-full bg-black hover:bg-amber-400 text-white text-xs font-semibold tracking-wider uppercase shadow-lg backdrop-blur-sm border border-white/25 transition-all duration-200 hover:scale-105"
                 style={{ fontFamily: "Pixel, UncialAntiqua, serif", textShadow: "0 2px 8px rgba(0,0,0,0.4)" }}>
                 REGISTER NOW
               </a>
