@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
@@ -79,6 +79,10 @@ export default function CommitteeClient() {
   const [topicIndex, setTopicIndex] = useState(0);
   const [direction, setDirection] = useState(1);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const topic = committeeTopics[topicIndex];
   const total = committeeTopics.length;
@@ -167,13 +171,14 @@ export default function CommitteeClient() {
                 initial="hidden"
                 animate="show"
                 exit="exit"
-                className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 w-full max-w-[1000px]"
+                className="flex flex-wrap justify-center gap-3 sm:gap-4 md:gap-6 w-full max-w-[1000px]"
               >
                 {topic.members.map((member, i) => (
                   <motion.div
                     key={`${topicIndex}-${i}`}
                     custom={direction}
                     variants={cardVariants}
+                    className="w-[calc(50%-6px)] sm:w-[calc(50%-8px)] md:w-[calc(50%-12px)] lg:w-[calc(25%-18px)]"
                   >
                     <MemberCard
                       member={member}

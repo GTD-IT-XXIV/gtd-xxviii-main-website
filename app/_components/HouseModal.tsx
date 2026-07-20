@@ -31,6 +31,13 @@ export default function HouseModal({ houseName, ogs, onClose }: HouseModalProps)
         }}
         onClick={(e) => e.stopPropagation()}
       >
+        {/* House logo — centered, overlapping the top border */}
+        <img
+          src={`/images/houses/${houseName}_logo.PNG`}
+          alt={`${houseName} logo`}
+          className="absolute -top-16 left-1/2 -translate-x-1/2 w-[120px] sm:w-36 h-auto object-contain drop-shadow-lg pointer-events-none select-none"
+        />
+
         {/* Close button */}
         <button
           onClick={onClose}

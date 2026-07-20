@@ -449,9 +449,9 @@ export default function Page() {
                       {restRows.length === 0 && (
                         <p className="text-center opacity-60">No more teams yet</p>
                       )}
-                      {restRows.map((player) => (
+                      {restRows.map((player, i) => (
                         <div
-                          key={player.Rank}
+                          key={`${player.Rank}-${player.Name}-${i}`}
                           className="flex items-center"
                         >
                           <span className="w-[8%] shrink-0 text-center">{player.Rank}</span>

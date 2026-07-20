@@ -16,10 +16,10 @@ function LogoM({ src, alt }: { src: string; alt: string }) {
 export default function SponsorsSection() {
   return (
     <section className="w-full bg-white py-14 px-6">
-      <div className="max-w-2xl mx-auto flex flex-col items-center gap-10">
+      <div className="max-w-2xl md:max-w-5xl mx-auto flex flex-col md:flex-row items-center md:items-start justify-center gap-10 md:gap-14">
 
         {/* ── Sponsored by ── */}
-        <div className="w-full flex flex-col items-center gap-8">
+        <div className="w-full md:w-1/2 flex flex-col items-center gap-8">
           <h2
             className="text-2xl font-bold tracking-wide text-gray-700"
             style={{ fontFamily: "UncialAntiqua, serif" }}
@@ -41,11 +41,12 @@ export default function SponsorsSection() {
           <LogoM src="/images/sponsors/[Cloversoft] Logo (Grey Green).png" alt="Cloversoft" />
         </div>
 
-        {/* divider */}
-        <hr className="w-full border-gray-200" />
+        {/* divider — horizontal rule on mobile, vertical rule on desktop */}
+        <hr className="w-full border-gray-200 md:hidden" />
+        <div className="hidden md:block w-px self-stretch bg-gray-200" />
 
         {/* ── Supported by ── */}
-        <div className="w-full flex flex-col items-center gap-8">
+        <div className="w-full md:w-1/2 flex flex-col items-center gap-8">
           <h2
             className="text-2xl font-bold tracking-wide text-gray-700"
             style={{ fontFamily: "UncialAntiqua, serif" }}

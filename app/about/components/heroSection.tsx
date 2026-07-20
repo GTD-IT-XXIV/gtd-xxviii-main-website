@@ -66,7 +66,7 @@ export default function HeroSection() {
                 
                 {/* Left Column: Text */}
                 <div
-                    className="flex flex-col gap-4 md:gap-6 text-left leading-relaxed text-sm md:text-base tracking-wide"
+                    className="order-2 md:order-1 flex flex-col gap-4 md:gap-6 text-left leading-relaxed text-sm md:text-base tracking-wide"
                     style={{ fontFamily: "'ParagraphFont', sans-serif" }}
                 >
                     <p>
@@ -84,7 +84,7 @@ export default function HeroSection() {
                 </div>
 
                 {/* Right Column: Image Carousel */}
-                <div className="flex flex-col items-center w-full mt-6 md:mt-0">
+                <div className="order-1 md:order-2 flex flex-col items-center w-full mt-6 md:mt-0">
                     
                     <div className="w-full rounded-[1.5rem] md:rounded-[2rem] overflow-hidden border border-gray-600 shadow-xl aspect-[4/3] flex items-center justify-center bg-black">
                         <img
