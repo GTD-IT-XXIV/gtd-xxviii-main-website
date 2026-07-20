@@ -48,14 +48,14 @@ const STORYLINE = [
 ];
 
 const locations = [
-  { id: 1, name: "Dulcia",      x: 42, y: 42, mx: 32, my: 53, color: "amber",  emoji: "🏜️", href: "/",             houseKey: "Dulcia"   },
-  { id: 2, name: "Ignara",      x: 62, y: 42, mx: 72, my: 53, color: "red",    emoji: "🌋", href: "/",             houseKey: "Ignara"   },
-  { id: 3, name: "Avelis",      x: 44, y: 78, mx: 32, my: 72, color: "cyan",   emoji: "🌊", href: "/",             houseKey: "Avelis"   },
-  { id: 4, name: "Wygrove",     x: 59, y: 78, mx: 72, my: 72, color: "green",  emoji: "🌿", href: "/",             houseKey: "Wygrove"  },
-  { id: 5, name: "Committee",   x: 22, y: 38, mx: 26, my: 36, color: "purple", emoji: "🎪", href: "/committee",    houseKey: null },
-  { id: 6, name: "About Us",    x: 83, y: 40, mx: 72, my: 35, color: "slate",  emoji: "💻", href: "/about",        houseKey: null },
-  { id: 7, name: "Leaderboard", x: 85, y: 80, mx: 74, my: 90, color: "yellow", emoji: "🏆", href: "/leaderboard",  houseKey: null },
-  { id: 8, name: "Events",      x: 20, y: 72, mx: 26, my: 90, color: "teal",   emoji: "🎉", href: "/event",        houseKey: null },
+  { id: 1, name: "Dulcia",      x: 42, y: 44, mx: 32, my: 53, color: "amber",  emoji: "🏜️", href: "/",             houseKey: "Dulcia"   },
+  { id: 2, name: "Ignara",      x: 62, y: 44, mx: 72, my: 53, color: "red",    emoji: "🌋", href: "/",             houseKey: "Ignara"   },
+  { id: 3, name: "Avelis",      x: 44, y: 78, mx: 32, my: 73, color: "cyan",   emoji: "🌊", href: "/",             houseKey: "Avelis"   },
+  { id: 4, name: "Wygrove",     x: 59, y: 78, mx: 70, my: 73, color: "green",  emoji: "🌿", href: "/",             houseKey: "Wygrove"  },
+  { id: 5, name: "Committee",   x: 22, y: 38, mx: 26, my: 34, color: "purple", emoji: "🎪", href: "/committee",    houseKey: null },
+  { id: 6, name: "About Us",    x: 83, y: 40, mx: 72, my: 34, color: "slate",  emoji: "💻", href: "/about",        houseKey: null },
+  { id: 7, name: "Leaderboard", x: 85, y: 80, mx: 71, my: 94, color: "yellow", emoji: "🏆", href: "/leaderboard",  houseKey: null },
+  { id: 8, name: "Events",      x: 20, y: 72, mx: 26, my: 94, color: "teal",   emoji: "🎉", href: "/event",        houseKey: null },
 ];
 
 const HOUSE_DATA: Record<string, { name: string; gls: string[]; image: string }[]> = {
@@ -145,6 +145,13 @@ const easeInOutQuad = (t: number) =>
 
 type Flight = { loc: (typeof locations)[0]; from: CharPos; t: number };
 
+// ── House-to-house walk: routes through the map centre instead of a straight
+// line, e.g. Dulcia → centre → Ignara. Only used between the 4 kingdoms
+// (locations with a houseKey); outer islands keep the umbrella flight.
+type HouseWalk = { from: CharPos; via: CharPos; to: CharPos; split: number; t: number };
+const HOUSE_WALK_MS     = 1100;  // total centre-routed walk duration
+const HOUSE_WALK_CYCLES = 5;     // step cycles across the whole walk
+
 export default function Home() {
 
   const [openHouse, setOpenHouse]   = useState<string | null>(null);
@@ -158,6 +165,9 @@ export default function Home() {
   const router = useRouter();
   const [flight, setFlight] = useState<Flight | null>(null);
   const flightRaf = useRef<number | null>(null);
+
+  const [houseWalk, setHouseWalk] = useState<HouseWalk | null>(null);
+  const houseWalkRaf = useRef<number | null>(null);
 
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
@@ -338,8 +348,53 @@ export default function Home() {
   useEffect(() => {
     return () => {
       if (flightRaf.current !== null) cancelAnimationFrame(flightRaf.current);
+      if (houseWalkRaf.current !== null) cancelAnimationFrame(houseWalkRaf.current);
     };
   }, []);
+
+  // Walk between the 4 kingdoms by routing through the map centre instead of
+  // cutting a straight diagonal, e.g. Dulcia → centre → Ignara. Keeps the
+  // umbrella flight (startFlight) untouched — this only applies to houses.
+  const startHouseWalk = useCallback(
+    (loc: (typeof locations)[0]) => {
+      if (flight || houseWalk) return;   // an animation is already running
+
+      if (loc.id === selectedId) {
+        // Already standing on this house — just reopen it.
+        setTimeout(() => setOpenHouse(loc.houseKey), 300);
+        return;
+      }
+
+      const current = locations.find((l) => l.id === selectedId);
+      const from: CharPos = current
+        ? { x: isMobile ? current.mx : current.x, y: isMobile ? current.my : current.y }
+        : MAP_CENTER;
+      const to: CharPos = { x: isMobile ? loc.mx : loc.x, y: isMobile ? loc.my : loc.y };
+
+      setSelectedId(loc.id);
+
+      const dist1 = Math.hypot(MAP_CENTER.x - from.x, MAP_CENTER.y - from.y);
+      const dist2 = Math.hypot(to.x - MAP_CENTER.x, to.y - MAP_CENTER.y);
+      const split = dist1 + dist2 > 0 ? dist1 / (dist1 + dist2) : 0.5;
+
+      const start = performance.now();
+      setHouseWalk({ from, via: MAP_CENTER, to, split, t: 0 });
+
+      const step = (now: number) => {
+        const t = clamp((now - start) / HOUSE_WALK_MS, 0, 1);
+        setHouseWalk({ from, via: MAP_CENTER, to, split, t });
+        if (t < 1) {
+          houseWalkRaf.current = requestAnimationFrame(step);
+        } else {
+          houseWalkRaf.current = null;
+          setHouseWalk(null);
+          setTimeout(() => setOpenHouse(loc.houseKey), 400);
+        }
+      };
+      houseWalkRaf.current = requestAnimationFrame(step);
+    },
+    [flight, houseWalk, selectedId, isMobile, MAP_CENTER],
+  );
 
   const selectedLoc = locations.find((l) => l.id === selectedId);
 
@@ -392,11 +447,28 @@ export default function Home() {
     : null;
   const flightScale = flight ? 1 + (FLIGHT_PEAK_SCALE - 1) * arc(flight.t) : 1;
 
+  // ── House-to-house walk ──
+  // Two straight legs (from → centre, centre → target), each covering a
+  // share of `t` proportional to its distance so the pace stays even.
+  const houseWalkPos = houseWalk
+    ? (() => {
+        const { from, via, to, split, t } = houseWalk;
+        if (t <= split) {
+          const segT = split > 0 ? t / split : 1;
+          return { x: lerp(from.x, via.x, segT), y: lerp(from.y, via.y, segT) };
+        }
+        const segT = split < 1 ? (t - split) / (1 - split) : 1;
+        return { x: lerp(via.x, to.x, segT), y: lerp(via.y, to.y, segT) };
+      })()
+    : null;
+
   const climbersTop  = flightPos ? flightPos.y
+    : houseWalkPos ? houseWalkPos.y
     : travelTarget ? (isMobile ? travelTarget.my : travelTarget.y)
     : walking ? walkTop
     : lerp(cliffTop, MAP_CENTER.y, flightEased);
   const climbersLeft = flightPos ? flightPos.x
+    : houseWalkPos ? houseWalkPos.x
     : travelTarget ? (isMobile ? travelTarget.mx : travelTarget.x)
     : walking ? trailX(climbProgress)
     : lerp(trailX(WALK_END), MAP_CENTER.x, flightEased);
@@ -437,8 +509,15 @@ export default function Home() {
     return Math.min(UMBRELLA_FRAMES - 1, UMBRELLA_FLIGHT_END + Math.floor(d * retractLen));
   })();
 
+  // House walk: cycle the same walk sprite used on the climb, timed to the
+  // whole centre-routed trip rather than scroll position.
+  const houseWalkFrame = houseWalk
+    ? Math.floor(houseWalk.t * WALK_FRAMES * HOUSE_WALK_CYCLES) % WALK_FRAMES
+    : 0;
+
   let spriteDir: string, spriteFrame: number;
   if (flight)       { spriteDir = "finn_umbrella"; spriteFrame = umbrellaFrame; }   // flying to an island
+  else if (houseWalk)    { spriteDir = "finn_walk"; spriteFrame = houseWalkFrame; }   // walking between kingdoms
   else if (climbDone)    { spriteDir = "finn_idle"; spriteFrame = idleFrame; }   // landed — breathe at map centre
   else if (landing) { spriteDir = "finn_land"; spriteFrame = landFrame; }
   else if (jumping) { spriteDir = "finn_jump"; spriteFrame = jumpFrame; }
@@ -447,9 +526,15 @@ export default function Home() {
   const spriteSize = SPRITE_SIZE[spriteDir] ?? SPRITE_SIZE.finn_idle;
 
   // Face the direction they're weaving up the path; keep that facing through the
-  // jump. While flying, face the island being travelled to.
+  // jump. While flying, face the island being travelled to. While walking
+  // between kingdoms, face whichever way the current leg (to-centre or
+  // centre-to-target) is heading.
   const facingRight = flight
     ? (isMobile ? flight.loc.mx : flight.loc.x) >= flight.from.x
+    : houseWalk
+    ? (houseWalk.t <= houseWalk.split
+        ? houseWalk.via.x >= houseWalk.from.x
+        : houseWalk.to.x >= houseWalk.via.x)
     : walking
     ? trailX(climbProgress) >= trailX(Math.max(0, climbProgress - 0.005))
     : trailX(WALK_END) >= trailX(WALK_END - 0.005);
@@ -504,7 +589,7 @@ export default function Home() {
   const mapInteractive = cloudSplitEased >= 0.999;
 
   const globalSpriteOpacity = charOpacity;
-  const posTransition = flight ? undefined
+  const posTransition = flight || houseWalk ? undefined
     : traveled ? "left 0.75s cubic-bezier(0.34,1.5,0.64,1), top 0.75s cubic-bezier(0.34,1.5,0.64,1)"
     : landing ? "left 0.2s linear, top 0.2s linear" : undefined;
   const globalSpriteTransition = [posTransition, "opacity 0.5s ease"].filter(Boolean).join(", ");
@@ -575,8 +660,7 @@ export default function Home() {
                     onClick={(e) => {
                       if (loc.houseKey) {
                         e.preventDefault();
-                        handleSelect(loc);
-                        setTimeout(() => setOpenHouse(loc.houseKey), 800);
+                        startHouseWalk(loc);
                         return;
                       }
                       startFlight(e, loc);
@@ -652,8 +736,7 @@ export default function Home() {
                     onClick={(e) => {
                       if (loc.houseKey) {
                         e.preventDefault();
-                        handleSelect(loc);
-                        setTimeout(() => setOpenHouse(loc.houseKey), 800);
+                        startHouseWalk(loc);
                         return;
                       }
                       startFlight(e, loc);
