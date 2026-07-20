@@ -512,7 +512,7 @@ export default function Home() {
   return (
     <>
     <div ref={introRef} className="relative w-full" style={{ height: "800vh", background: "#06070f" }}>
-      <div className="sticky top-0 h-screen w-full overflow-hidden" style={{ background: "#06070f" }}>
+      <div className="sticky top-0 h-[100dvh] w-full overflow-hidden" style={{ background: "#06070f" }}>
 
         {/*
           LAYER STACK (back → front)
@@ -541,6 +541,14 @@ export default function Home() {
 
             {/* Title */}
             <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10 text-center pointer-events-none">
+              <Image
+                src="/images/aeterna_logo.PNG"
+                alt="Aeterna logo"
+                width={90}
+                height={90}
+                className="absolute top-1/2 right-full -translate-y-1/2 mr-4 object-contain select-none"
+                style={{ filter: "drop-shadow(0 2px 12px rgba(0,0,0,0.55))" }}
+              />
               <h1 className="text-2xl font-bold tracking-widest text-white uppercase"
                 style={{ textShadow: "0 2px 12px rgba(0,0,0,0.55)" }}>
                 GTD XXVIII
@@ -599,11 +607,24 @@ export default function Home() {
             <Image src="/images/map_mobile.png" alt="World Map" fill className="object-cover" />
 
             {/* Title */}
-            <div className="absolute top-10 left-1/2 -translate-x-1/2 z-10 text-center pointer-events-none">
-              <h1 className="text-3xl font-bold tracking-widest text-white uppercase"
-                style={{ textShadow: "0 2px 12px rgba(0,0,0,0.55)" }}>
-                GTD XXVIII
-              </h1>
+            <div
+              className="absolute left-1/2 -translate-x-1/2 z-10 text-center pointer-events-none"
+              style={{ top: "max(2.5rem, calc(env(safe-area-inset-top) + 1.5rem))" }}
+            >
+              <div className="flex items-center justify-center gap-2">
+                <Image
+                  src="/images/aeterna_logo.PNG"
+                  alt="Aeterna logo"
+                  width={36}
+                  height={36}
+                  className="object-contain select-none flex-shrink-0"
+                  style={{ filter: "drop-shadow(0 2px 12px rgba(0,0,0,0.55))" }}
+                />
+                <h1 className="text-3xl font-bold tracking-widest text-white uppercase"
+                  style={{ textShadow: "0 2px 12px rgba(0,0,0,0.55)" }}>
+                  GTD XXVIII
+                </h1>
+              </div>
               <h2 className="text-6xl font-bold tracking-widest text-white uppercase mt-1"
                 style={{ fontFamily: "AdventureTime, UncialAntiqua, serif", textShadow: "0 2px 12px rgba(0,0,0,0.55)" }}>
                 AETERNA

@@ -101,9 +101,18 @@ interface ExpandedCardProps {
 export function ExpandedCard({ member, index, topicIndex, onClose }: ExpandedCardProps) {
   const isMobile = useIsMobile();
 
+  // Lock the page behind the overlay so scrolling inside it never chains to the background page.
+  useEffect(() => {
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, []);
+
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex flex-col sm:flex-row items-center justify-start sm:justify-center gap-3 sm:gap-0 overflow-y-auto py-6 sm:py-0"
+      className="fixed inset-0 z-50 flex flex-col sm:flex-row items-center justify-start sm:justify-center gap-0 sm:gap-0 overflow-y-auto overscroll-contain py-3 sm:py-0"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -111,7 +120,7 @@ export function ExpandedCard({ member, index, topicIndex, onClose }: ExpandedCar
     >
       {/* ── Backdrop ── */}
       <motion.div
-        className="absolute inset-0 bg-black/60 card-backdrop"
+        className="fixed inset-0 bg-black/60 card-backdrop"
         onClick={onClose}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -169,7 +178,7 @@ export function ExpandedCard({ member, index, topicIndex, onClose }: ExpandedCar
       </motion.div>
       {/* ── Status card (next to the member card) ── */}
         <motion.div
-          className="relative flex-shrink-0 z-0 w-[min(340px,80vw)] sm:w-[min(340px,42vw)]"
+          className="relative flex-shrink-0 z-0 w-[min(340px,80vw)] sm:w-[min(340px,42vw)] -mt-16 sm:mt-0"
           style={{ aspectRatio: "3 / 4.2" }}
           initial={isMobile ? { opacity: 0, y: -280 } : { opacity: 0, x: -320 }}
           animate={isMobile ? { opacity: 1, y: 0 } : { opacity: 1, x: 0 }}

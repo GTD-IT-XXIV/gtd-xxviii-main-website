@@ -668,6 +668,14 @@ export const committeeTopics: CommitteeTopic[] = [
     second_image: "/images/committee/welfare/CLARISSA2.jpg",
   },
   {
+    name: "Jonathan",
+    full_name: "Jonathan Alfonso Tarman",
+    year_course: "ROB/2",
+    og: "OG 3",
+    first_image: "/images/committee/welfare/JONATHAN1.jpg",
+    second_image: "/images/committee/welfare/JONATHAN2.jpg",
+  },
+  {
     name: "Gabriel",
     full_name: "Gabriel Thane",
     year_course: "MSE/2",
@@ -715,14 +723,6 @@ export const committeeTopics: CommitteeTopic[] = [
     first_image: "/images/committee/welfare/JANICE1.jpg",
     second_image: "/images/committee/welfare/JANICE2.jpg",
   },
-  //{
-    //name: "Jonathan",
-    //full_name: "Jonathan Alfonso Tarman",
-    //year_course: "ROBOTICS/2",
-    //og: "OG 3",
-    //first_image: "/images/committee/welfare/JONATHAN1.jpg",
-    //second_image: "/images/committee/welfare/JONATHAN2.jpg",
-  //},
   {
     name: "Kristania",
     full_name: "Kristania Liman",
@@ -863,7 +863,7 @@ export const committeeTopics: CommitteeTopic[] = [
     year_course: "MACS/2",
     og: "OG 4",
     first_image: "/images/committee/polog/CASEY1.jpeg",
-    second_image: "/images/committee/polog/casey2.jpeg",
+    second_image: "/images/committee/polog/CASEY1.jpeg",
   },
   {
     name: "Celine",
@@ -955,9 +955,9 @@ export const committeeTopics: CommitteeTopic[] = [
   },
   {
     name: "Hansen",
-    full_name: "Frederico Hansen",
-    year_course: "EEE/3",
-    og: "OG 8",
+    full_name: "Frederrico Hansen Budianto",
+    year_course: "DSAI/4",
+    og: "OG 3",
     first_image: "/images/committee/polog/HANSEN1.jpeg",
     second_image: "/images/committee/polog/HANSEN2.jpeg",
   },
