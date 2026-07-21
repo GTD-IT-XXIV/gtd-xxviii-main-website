@@ -205,6 +205,7 @@ export default function Home() {
   const [finnPos, setFinnPos]       = useState<CharPos>(IDLE);
   const [jakePos, setJakePos]       = useState<CharPos>(IDLE);
 
+  const climbDoneRef = useRef(false);
   useEffect(() => {
     let idleTimer: ReturnType<typeof setTimeout>;
     function measure() {
@@ -213,8 +214,16 @@ export default function Home() {
       const scrollable = el.offsetHeight - window.innerHeight;
       const raw = scrollable > 0 ? (window.scrollY - el.offsetTop) / scrollable : 0;
       const p = clamp(raw, 0, 1);
+      // Once fully landed, ignore transient dips from scroll-up/overscroll
+      // (esp. mobile rubber-band) — otherwise the map briefly loses pointer
+      // events and the Skip Intro button flickers back on top of it before
+      // holdFloor snaps the scroll position back.
+      if (climbDoneRef.current && p < 0.999) return;
       setClimbProgress(p);
-      if (p >= 0.999) setClimbDone(true);
+      if (p >= 0.999) {
+        climbDoneRef.current = true;
+        setClimbDone(true);
+      }
     }
     function onScroll() {
       measure();
