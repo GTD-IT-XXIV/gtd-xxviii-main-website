@@ -830,7 +830,7 @@ export const committeeTopics: CommitteeTopic[] = [
   },
   {
     name: "Tiago",
-    full_name: "Tung Tiago",
+    full_name: "Tung Tiago Masimo",
     year_course: "BUS/3",
     og: "OG 1",
     first_image: "/images/committee/welfare/TUNG1.jpg",
@@ -976,7 +976,7 @@ export const committeeTopics: CommitteeTopic[] = [
     year_course: "MATH/4",
     og: "OG 1",
     first_image: "/images/committee/polog/HAIDAR1.jpeg",
-    second_image: "/images/committee/polog/haidar2.jpeg",
+    second_image: "/images/committee/polog/HAIDAR2.jpeg",
   },
   {
     name: "Hansen",
@@ -1012,7 +1012,7 @@ export const committeeTopics: CommitteeTopic[] = [
   },
   {
     name: "James M",
-    full_name: "James Matthew",
+    full_name: "James Matthew Muljono",
     year_course: "MSE/2",
     og: "OG 7",
     first_image: "/images/committee/polog/JAMES_M1.jpeg",
