@@ -25,7 +25,7 @@ export default function HouseModal({ houseName, ogs, onClose }: HouseModalProps)
       <div className="relative w-full max-w-4xl my-auto" onClick={(e) => e.stopPropagation()}>
         {/* House logo — centered, overlapping the top border */}
         <Image
-          src={`/images/houses/${houseName}_logo.png`}
+          src={`/images/houses/${houseName}_logo.PNG`}
           alt={`${houseName} logo`}
           width={2480}
           height={3508}
