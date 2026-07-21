@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+/* eslint-disable @next/next/no-img-element */
 
 interface OG {
   name: string;
@@ -24,11 +24,9 @@ export default function HouseModal({ houseName, ogs, onClose }: HouseModalProps)
       {/* Modal wrapper */}
       <div className="relative w-full max-w-4xl my-auto" onClick={(e) => e.stopPropagation()}>
         {/* House logo — centered, overlapping the top border */}
-        <Image
+        <img
           src={`/images/houses/${houseName}_logo.PNG`}
           alt={`${houseName} logo`}
-          width={2480}
-          height={3508}
           className="absolute -top-24 sm:-top-16 left-1/2 -translate-x-1/2 w-[120px] sm:w-36 h-auto object-contain drop-shadow-lg pointer-events-none select-none z-10"
         />
 
@@ -64,14 +62,8 @@ export default function HouseModal({ houseName, ogs, onClose }: HouseModalProps)
           <div className="flex justify-center gap-12 px-14 py-14">
             {ogs.map((og) => (
               <div key={og.name} className="flex flex-col items-center gap-2 flex-1">
-                <div className="relative w-full aspect-square rounded-xl overflow-hidden max-w-[280px]">
-                  <Image
-                    src={og.image}
-                    alt={og.name}
-                    fill
-                    sizes="280px"
-                    className="object-cover"
-                  />
+                <div className="w-full aspect-square rounded-xl overflow-hidden max-w-[280px]">
+                  <img src={og.image} alt={og.name} className="w-full h-full object-cover" />
                 </div>
                 <div className="flex flex-col items-center gap-1" style={{ fontFamily: "Pixel, UncialAntiqua, serif" }}>
                   <p className="text-3xl font-bold text-gray-800 text-center">{og.name}</p>
@@ -100,14 +92,8 @@ export default function HouseModal({ houseName, ogs, onClose }: HouseModalProps)
               }}
             >
               <div className="flex flex-col items-center gap-0.5 px-6 pt-12 pb-16">
-                <div className="relative w-full aspect-square rounded-xl overflow-hidden max-w-[190px] mx-auto">
-                  <Image
-                    src={og.image}
-                    alt={og.name}
-                    fill
-                    sizes="190px"
-                    className="object-cover"
-                  />
+                <div className="w-full aspect-square rounded-xl overflow-hidden max-w-[190px] mx-auto">
+                  <img src={og.image} alt={og.name} className="w-full h-full object-cover" />
                 </div>
                 <div className="flex flex-col items-center gap-0 max-w-[230px] mx-auto" style={{ fontFamily: "Pixel, UncialAntiqua, serif" }}>
                   <p className="text-2xl font-bold text-gray-800 text-center">{og.name}</p>

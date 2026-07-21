@@ -172,6 +172,21 @@ type HouseWalk = { from: CharPos; via: CharPos; to: CharPos; split: number; t: n
 const HOUSE_WALK_MS     = 1100;  // total centre-routed walk duration
 const HOUSE_WALK_CYCLES = 5;     // step cycles across the whole walk
 
+// ── Phase timeline (all forward scroll) ──
+//   0        → WALK_END   walk up the path onto the cliff plateau
+//   WALK_END → FALL_END   jump off the cliff and fall toward the map centre
+//                         under gravity; the clouds part around p=0.85 so the
+//                         drop lands them onto the revealed map
+//   FALL_END → 1.0        land (crouch) at map centre; sprite stays put
+const WALK_END    = 0.63;   // finish climbing, launch off the cliff
+const FALL_END    = 0.97;   // reach map centre (clouds essentially open by now)
+
+// Once scroll carries the sprite past WALK_END, the jump + landing physics
+// take over from the wheel/touch input and auto-play to p=1 over this
+// duration — otherwise a fast or erratic scroll scrubs through the fall
+// unnaturally or overshoots past where Finn should land.
+const AUTO_JUMP_MS = 2200;
+
 export default function Home() {
 
   const [openHouse, setOpenHouse]   = useState<string | null>(null);
@@ -206,8 +221,60 @@ export default function Home() {
   const [jakePos, setJakePos]       = useState<CharPos>(IDLE);
 
   const climbDoneRef = useRef(false);
+  // Last computed scroll progress — tracked in a ref (not state) so the
+  // mount-once scroll effect below can detect the WALK_END crossing without
+  // re-subscribing on every climbProgress update.
+  const lastPRef = useRef(0);
+  const autoJumpingRef = useRef(false);
+  const autoJumpTimer = useRef<ReturnType<typeof setInterval> | null>(null);
   useEffect(() => {
     let idleTimer: ReturnType<typeof setTimeout>;
+
+    // Takes over from the user's scroll once the sprite reaches the cliff
+    // edge, and tweens the scroll position from WALK_END to 1 (jump, fall,
+    // land) on its own over AUTO_JUMP_MS — a manual scroll can't scrub that
+    // arc smoothly and easily overshoots past the landing spot.
+    //
+    // Two things drive the scroll position in parallel, deliberately:
+    //  1. A native smooth scroll to the target, which runs on the compositor
+    //     thread independent of page JS — a resilient fallback that still
+    //     lands even if this tab's JS timers are heavily throttled.
+    //  2. A setInterval tween with our own easing/duration, which overrides
+    //     #1 every tick with an "instant" jump to the current eased position
+    //     whenever the timer *does* run normally — that's what gives us
+    //     control over the pacing instead of the browser's fixed default.
+    // Either way, `measure()` below is what actually clears the auto-jump
+    // flag once the real scroll position reports landed — not a timer —
+    // so a starved JS timer can never leave input permanently blocked.
+    function startAutoJump() {
+      if (autoJumpingRef.current) return;
+      const el = introRef.current;
+      if (!el) return;
+      const scrollable = el.offsetHeight - window.innerHeight;
+      if (scrollable <= 0) return;
+
+      autoJumpingRef.current = true;
+      const targetY = el.offsetTop + scrollable;   // p = 1
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduced) {
+        window.scrollTo({ top: targetY, behavior: "instant" });
+        return;
+      }
+
+      window.scrollTo({ top: targetY, behavior: "smooth" });
+
+      const startY = window.scrollY;
+      const start = performance.now();
+      autoJumpTimer.current = setInterval(() => {
+        const t = clamp((performance.now() - start) / AUTO_JUMP_MS, 0, 1);
+        window.scrollTo({ top: lerp(startY, targetY, easeInOutQuad(t)), behavior: "instant" });
+        if (t >= 1 && autoJumpTimer.current !== null) {
+          clearInterval(autoJumpTimer.current);
+          autoJumpTimer.current = null;
+        }
+      }, 16);
+    }
+
     function measure() {
       const el = introRef.current;
       if (!el) return;
@@ -218,12 +285,30 @@ export default function Home() {
       // (esp. mobile rubber-band) — otherwise the map briefly loses pointer
       // events and the Skip Intro button flickers back on top of it before
       // holdFloor snaps the scroll position back.
-      if (climbDoneRef.current && p < 0.999) return;
+      if (climbDoneRef.current && p < 0.999) { lastPRef.current = p; return; }
+      const wasBelowWalkEnd = lastPRef.current < WALK_END;
       setClimbProgress(p);
+      lastPRef.current = p;
       if (p >= 0.999) {
         climbDoneRef.current = true;
         setClimbDone(true);
+        // The real scroll position landing is the source of truth for
+        // ending the auto-jump — not a timer — so it can't get stuck
+        // mid-flight if the interval above never ran.
+        autoJumpingRef.current = false;
+        if (autoJumpTimer.current !== null) {
+          clearInterval(autoJumpTimer.current);
+          autoJumpTimer.current = null;
+        }
+      } else if (wasBelowWalkEnd && p >= WALK_END) {
+        startAutoJump();
       }
+    }
+    // Swallow wheel/touch input while the auto-jump tween owns the scroll
+    // position, so the user's continued scrolling can't fight it or carry
+    // past the landing spot the moment it hands control back.
+    function blockInputDuringAutoJump(e: Event) {
+      if (autoJumpingRef.current) e.preventDefault();
     }
     function onScroll() {
       measure();
@@ -235,10 +320,15 @@ export default function Home() {
     measure();
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", measure);
+    window.addEventListener("wheel", blockInputDuringAutoJump, { passive: false });
+    window.addEventListener("touchmove", blockInputDuringAutoJump, { passive: false });
     return () => {
       clearTimeout(idleTimer);
+      if (autoJumpTimer.current !== null) clearInterval(autoJumpTimer.current);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", measure);
+      window.removeEventListener("wheel", blockInputDuringAutoJump);
+      window.removeEventListener("touchmove", blockInputDuringAutoJump);
     };
   }, []);
 
@@ -254,12 +344,14 @@ export default function Home() {
     return () => window.removeEventListener("scroll", holdFloor);
   }, [climbDone]);
 
-  // Once Finn lands, scrolling back up is locked to the floor — on desktop that
-  // makes the still-visible scrollbar look stuck/broken, so hide it there.
+  // Desktop hides the scrollbar track for the whole page — the climb is
+  // driven by scroll but isn't meant to look like a normal scrollable page,
+  // and once Finn lands, scrolling back up is locked to the floor, which
+  // would make a still-visible scrollbar look stuck/broken.
   useEffect(() => {
-    document.documentElement.classList.toggle("hide-scrollbar", climbDone && !isMobile);
+    document.documentElement.classList.toggle("hide-scrollbar", !isMobile);
     return () => document.documentElement.classList.remove("hide-scrollbar");
-  }, [climbDone, isMobile]);
+  }, [isMobile]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -436,14 +528,6 @@ export default function Home() {
 
   // ── Derived animation values ──
 
-  // ── Phase timeline (all forward scroll) ──
-  //   0        → WALK_END   walk up the path onto the cliff plateau
-  //   WALK_END → FALL_END   jump off the cliff and fall toward the map centre
-  //                         under gravity; the clouds part around p=0.85 so the
-  //                         drop lands them onto the revealed map
-  //   FALL_END → 1.0        land (crouch) at map centre; sprite stays put
-  const WALK_END    = 0.63;   // finish climbing, launch off the cliff
-  const FALL_END    = 0.97;   // reach map centre (clouds essentially open by now)
   const cliffTop    = 40;     // how high they climb before jumping (% from top)
 
   const walking = climbProgress < WALK_END;

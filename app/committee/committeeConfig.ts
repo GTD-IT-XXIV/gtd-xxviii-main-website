@@ -972,11 +972,11 @@ export const committeeTopics: CommitteeTopic[] = [
   },
   {
     name: "Haidar",
-    full_name: "Haidar Prayata",
+    full_name: "Haidar Prayata Wirasana",
     year_course: "MATH/4",
     og: "OG 1",
     first_image: "/images/committee/polog/HAIDAR1.jpeg",
-    second_image: "/images/committee/polog/HAIDAR1.jpeg",
+    second_image: "/images/committee/polog/HAIDAR2.jpg",
   },
   {
     name: "Hansen",
