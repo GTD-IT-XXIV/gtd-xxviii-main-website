@@ -1114,7 +1114,7 @@ export const committeeTopics: CommitteeTopic[] = [
   {
     name: "Daniel",
     full_name: "Daniel Delin",
-    year_course: "EEE/3",
+    year_course: "EEE/4",
     og: "OG 8",
     first_image: "/images/committee/bfm/daniel1.jpg",
     second_image: "/images/committee/bfm/daniel2.jpg",
