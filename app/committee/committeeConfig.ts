@@ -1,6 +1,7 @@
 export interface CommitteeMember {
   name: string;           // Short name shown on card banner
   full_name: string;      // Full name in expanded view
+  role?: string;          // Committee role, e.g. "President" (TOPS n MC only)
   year_course: string;    // e.g. "Y2 / Computer Science"
   og: string;             // e.g. "OG 3"
   first_image: string;    // Front-facing photo path
@@ -44,6 +45,7 @@ export const committeeTopics: CommitteeTopic[] = [
   {
     name: "Sheryn",
     full_name: "Sheryn Wu",
+    role: "President",
     year_course: "MSE/4",
     og: "OG 1",
     first_image: "/images/committee/MC/TOPS/SHERYN1.jpg",
@@ -52,6 +54,7 @@ export const committeeTopics: CommitteeTopic[] = [
   {
     name: "Via",
     full_name: "Agatha Kristanavia",
+    role: "TOPS PPIT & BFM",
     year_course: "CBC/4",
     og: "OG 7",
     first_image: "/images/committee/MC/TOPS/VIA1.jpg",
@@ -60,6 +63,7 @@ export const committeeTopics: CommitteeTopic[] = [
   {
     name: "Jason",
     full_name: "Jason Lihan",
+    role: "TOPS GL & WELFARE",
     year_course: "MSE/4",
     og: "OG 6",
     first_image: "/images/committee/MC/TOPS/JASON1.jpg",
@@ -68,6 +72,7 @@ export const committeeTopics: CommitteeTopic[] = [
   {
     name: "Olin",
     full_name: "Caroline Wijaya Santoso",
+    role: "TOPS POLOG",
     year_course: "MSE/4",
     og: "OG 4",
     first_image: "/images/committee/MC/TOPS/CAROLINE1.jpg",
@@ -76,6 +81,7 @@ export const committeeTopics: CommitteeTopic[] = [
   {
     name: "Sharon",
     full_name: "Gabriella Sharon Gunawan",
+    role: "MC BFM",
     year_course: "ME/3",
     og: "OG 2",
     first_image: "/images/committee/MC/BFM/SHARON1.jpg",
@@ -84,6 +90,7 @@ export const committeeTopics: CommitteeTopic[] = [
   {
     name: "Janice",
     full_name: "Janice Vashti",
+    role: "MC BFM",
     year_course: "ECON/4",
     og: "OG 6",
     first_image: "/images/committee/MC/BFM/JANICE1.jpg",
@@ -92,6 +99,7 @@ export const committeeTopics: CommitteeTopic[] = [
   {
     name: "Michelle",
     full_name: "Michelle Priscilla Hung",
+    role: "MC BFM",
     year_course: "CBE/3",
     og: "OG 4",
     first_image: "/images/committee/MC/BFM/MICHELLE1.jpg",
@@ -100,6 +108,7 @@ export const committeeTopics: CommitteeTopic[] = [
   {
     name: "Judah",
     full_name: "Judah Valiant Primeldi",
+    role: "CGL",
     year_course: "CBE/3",
     og: "OG 3",
     first_image: "/images/committee/MC/GL/JUDAH1.jpg",
@@ -108,6 +117,7 @@ export const committeeTopics: CommitteeTopic[] = [
   {
     name: "Naja",
     full_name: "Naja Andria Mumtaz",
+    role: "CGL",
     year_course: "BIE/3",
     og: "OG 7",
     first_image: "/images/committee/MC/GL/NAJA1.jpg",
@@ -116,6 +126,7 @@ export const committeeTopics: CommitteeTopic[] = [
   {
     name: "Alex",
     full_name: "Alexander Sutanto Herlington",
+    role: "MC POLOG",
     year_course: "CEE/3",
     og: "OG 3",
     first_image: "/images/committee/MC/POLOG/ALEXANDER1.jpg",
@@ -124,6 +135,7 @@ export const committeeTopics: CommitteeTopic[] = [
   {
     name: "Chloe",
     full_name: "Chloe Atipinati Djohan",
+    role: "MC POLOG",
     year_course: "CSC/3",
     og: "OG 2",
     first_image: "/images/committee/MC/POLOG/CHLOE1.jpg",
@@ -132,6 +144,7 @@ export const committeeTopics: CommitteeTopic[] = [
   {
     name: "Daniel",
     full_name: "Daniel Lee",
+    role: "MC POLOG",
     year_course: "EEE/3",
     og: "OG 5",
     first_image: "/images/committee/MC/POLOG/DANIEL1.jpg",
@@ -140,6 +153,7 @@ export const committeeTopics: CommitteeTopic[] = [
   {
     name: "Gabbie",
     full_name: "Gabbie Clarissa Utama",
+    role: "MC POLOG",
     year_course: "EEE/3",
     og: "OG 6",
     first_image: "/images/committee/MC/POLOG/GABBIE1.jpg",
@@ -148,6 +162,7 @@ export const committeeTopics: CommitteeTopic[] = [
   {
     name: "Kevin",
     full_name: "Kevin Raditya Mahendra",
+    role: "MC POLOG",
     year_course: "MADA/3",
     og: "OG 8",
     first_image: "/images/committee/MC/POLOG/KEVIN1.jpg",
@@ -156,6 +171,7 @@ export const committeeTopics: CommitteeTopic[] = [
   {
     name: "Michael",
     full_name: "Michael Angelo",
+    role: "MC POLOG",
     year_course: "ME/3",
     og: "OG 7",
     first_image: "/images/committee/MC/POLOG/MICHAEL1.jpg",
@@ -164,6 +180,7 @@ export const committeeTopics: CommitteeTopic[] = [
   {
     name: "Nickholas",
     full_name: "Nickholas Jamie Jorrey Pandia",
+    role: "MC POLOG",
     year_course: "CEE/3",
     og: "OG 1",
     first_image: "/images/committee/MC/POLOG/NICKHOLAS1.jpg",
@@ -172,6 +189,7 @@ export const committeeTopics: CommitteeTopic[] = [
   {
     name: "Anastasia",
     full_name: "Anastasia Koesoemo",
+    role: "MC PPIT",
     year_course: "MADA/3",
     og: "OG 4",
     first_image: "/images/committee/MC/PPIT/ANASTASIA1.jpg",
@@ -180,6 +198,7 @@ export const committeeTopics: CommitteeTopic[] = [
   {
     name: "Enzio",
     full_name: "Enzio Dwiputra Sujandi",
+    role: "MC PPIT",
     year_course: "CSC/3",
     og: "OG 5",
     first_image: "/images/committee/MC/PPIT/ENZIO1.jpg",
@@ -188,6 +207,7 @@ export const committeeTopics: CommitteeTopic[] = [
   {
     name: "Nada",
     full_name: "Nada Shafiyah Rahmatunnisa",
+    role: "MC PPIT",
     year_course: "MSE/3",
     og: "OG 8",
     first_image: "/images/committee/MC/PPIT/NADA1.jpg",
@@ -196,6 +216,7 @@ export const committeeTopics: CommitteeTopic[] = [
   {
     name: "William",
     full_name: "William Mulia",
+    role: "MC PPIT",
     year_course: "CEE/3",
     og: "OG 1",
     first_image: "/images/committee/MC/PPIT/WILLIAM1.jpg",
@@ -204,6 +225,7 @@ export const committeeTopics: CommitteeTopic[] = [
   {
     name: "David",
     full_name: "David Runako",
+    role: "MC WELFARE",
     year_course: "CBE/3",
     og: "OG 2",
     first_image: "/images/committee/MC/WELFARE/DAVID1.jpg",
@@ -212,7 +234,8 @@ export const committeeTopics: CommitteeTopic[] = [
   {
     name: "Nisa",
     full_name: "Hayrunnisa Nur Cil",
-    year_course: "BIE/2",
+    role: "MC WELFARE",
+    year_course: "BIE/3",
     og: "OG 5",
     first_image: "/images/committee/MC/WELFARE/NISA1.jpg",
     second_image: "/images/committee/MC/WELFARE/NISA2.jpg",
@@ -220,6 +243,7 @@ export const committeeTopics: CommitteeTopic[] = [
   {
     name: "Ais",
     full_name: "Nabila Rahma Aisyah",
+    role: "MC WELFARE",
     year_course: "CBC/3",
     og: "OG 3",
     first_image: "/images/committee/MC/WELFARE/AIS1.jpg",
@@ -228,6 +252,7 @@ export const committeeTopics: CommitteeTopic[] = [
   {
     name: "Najwa",
     full_name: "Najwa Nahfisah Putri",
+    role: "MC WELFARE",
     year_course: "ECON/4",
     og: "OG 8",
     first_image: "/images/committee/MC/WELFARE/NAJWA1.jpg",

@@ -204,10 +204,18 @@ export function ExpandedCard({ member, index, topicIndex, onClose }: ExpandedCar
             </span>
             <span
               className="expanded-detail-text absolute text-white text-sm sm:text-base md:text-lg font-bold leading-tight whitespace-normal break-words"
-              style={{ top: "42%", left: "17%", right: "15%", transform: "translateY(-100%)" }}
+              style={{ top: "38%", left: "17%", right: "15%", transform: "translateY(-100%)" }}
             >
               {member.full_name}
             </span>
+            {member.role && (
+              <span
+                className="expanded-detail-text absolute text-white text-xs sm:text-sm md:text-base font-semibold italic leading-tight truncate"
+                style={{ top: "43%", left: "17%", right: "15%" }}
+              >
+                {member.role}
+              </span>
+            )}
             <span
               className="expanded-detail-text absolute text-white text-sm sm:text-base md:text-lg font-bold leading-tight truncate"
               style={{ top: "54.5%", left: "22%", right: "10%" }}
