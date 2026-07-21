@@ -672,8 +672,8 @@ export const committeeTopics: CommitteeTopic[] = [
     full_name: "Jonathan Alfonso Tarman",
     year_course: "ROB/2",
     og: "OG 3",
-    first_image: "/images/committee/welfare/JONATHAN1.jpg",
-    second_image: "/images/committee/welfare/JONATHAN2.jpg",
+    first_image: "/images/committee/welfare/JONATHAN1.JPG",
+    second_image: "/images/committee/welfare/JONATHAN2.JPG",
   },
   {
     name: "Gabriel",
@@ -1014,8 +1014,8 @@ export const committeeTopics: CommitteeTopic[] = [
     full_name: "Jonathan William Kho",
     year_course: "CBE/2",
     og: "OG 6",
-    first_image: "/images/committee/polog/JONATHAN1.JPG",
-    second_image: "/images/committee/polog/JONATHAN2.JPG",
+    first_image: "/images/committee/polog/JONATHAN1.jpeg",
+    second_image: "/images/committee/polog/JONATHAN2.jpeg",
   },
   {
     name: "Jordan",
