@@ -976,7 +976,7 @@ export const committeeTopics: CommitteeTopic[] = [
     year_course: "MATH/4",
     og: "OG 1",
     first_image: "/images/committee/polog/HAIDAR1.jpeg",
-    second_image: "/images/committee/polog/HAIDAR2.jpeg",
+    second_image: "/images/committee/polog/HAIDAR1.jpeg",
   },
   {
     name: "Hansen",
