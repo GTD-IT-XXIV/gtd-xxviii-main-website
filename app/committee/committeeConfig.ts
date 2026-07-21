@@ -940,7 +940,7 @@ export const committeeTopics: CommitteeTopic[] = [
   {
     name: "Ghaliza",
     full_name: "Ghaliza Pratiwi",
-    year_course: "MSE/4",
+    year_course: "CEE/2",
     og: "OG 7",
     first_image: "/images/committee/polog/GHALIZA1.jpeg",
     second_image: "/images/committee/polog/GHALIZA2.jpeg",
