@@ -1014,8 +1014,8 @@ export const committeeTopics: CommitteeTopic[] = [
     full_name: "Jonathan William Kho",
     year_course: "CBE/2",
     og: "OG 6",
-    first_image: "/images/committee/polog/JONATHAN1.jpeg",
-    second_image: "/images/committee/polog/JONATHAN2.jpeg",
+    first_image: "/images/committee/polog/JONATHAN1.JPG",
+    second_image: "/images/committee/polog/JONATHAN2.JPG",
   },
   {
     name: "Jordan",
