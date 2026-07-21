@@ -52,8 +52,8 @@ export default function MemberCard({ member, index, topicIndex, onExpand }: Memb
     >
       {/* ── Member photo (background layer, sits behind the frame) ── */}
       <div
-        className="absolute overflow-hidden rounded-lg"
-        style={{ top: "15%", left: "15%", right: "15%", bottom: "15%" }}
+        className="absolute overflow-hidden rounded-xl"
+        style={{ top: "15%", left: "15%", right: "15%", bottom: "16%" }}
       >
         <Image
           src={member.first_image}
@@ -136,8 +136,8 @@ export function ExpandedCard({ member, index, topicIndex, onClose }: ExpandedCar
       >
         {/* ── Member photo (background layer, sits behind the frame) ── */}
         <div
-          className="absolute overflow-hidden rounded-lg"
-          style={{ top: "15%", left: "15%", right: "15%", bottom: "15%" }}
+          className="absolute overflow-hidden rounded-xl"
+          style={{ top: "15%", left: "15%", right: "15%", bottom: "16%" }}
         >
           <Image
             src={member.second_image}
