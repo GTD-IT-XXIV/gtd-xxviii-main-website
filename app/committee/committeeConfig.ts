@@ -982,8 +982,8 @@ export const committeeTopics: CommitteeTopic[] = [
     full_name: "James Kenrick",
     year_course: "BSB/3",
     og: "OG 2",
-    first_image: "/images/committee/polog/JAMES1.jpeg",
-    second_image: "/images/committee/polog/JAMES2.jpeg",
+    first_image: "/images/committee/polog/JAMES1.jpg",
+    second_image: "/images/committee/polog/JAMES2.jpg",
   },
   {
     name: "James M",
