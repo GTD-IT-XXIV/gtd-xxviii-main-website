@@ -81,10 +81,6 @@ body {
   transform-origin: bottom center;
 }
 
-img {
-  image-rendering: crisp-edges;
-}
-
 /* ── Hide the scrollbar on desktop for the whole home page ──
    Scrolling itself stays active throughout (it drives the climb, then the
    footer is still reachable); only the visible track is hidden so the climb
