@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import HeroSection from "./components/heroSection";
+import Trailer from "./components/trailer";
 import Anthem from "./components/anthem";
 import FAQ from "./components/FAQ";
 import ContactUs from "./components/contactUs";
@@ -52,6 +53,7 @@ export default function Page() {
           </svg>
         </Link>
         <HeroSection />
+        <Trailer />
         <Anthem />
         <FAQ />
         <ContactUs />

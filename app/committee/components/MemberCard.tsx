@@ -161,7 +161,7 @@ export function ExpandedCard({ member, index, topicIndex, onClose }: ExpandedCar
         {/* ── Name on blue banner ── */}
         <div
           className="absolute left-0 right-0 flex items-end justify-center"
-          style={{ bottom: "17.5%", minHeight: "7%" }}
+          style={{ bottom: "18.5%", minHeight: "7%" }}
         >
           <span className="card-banner-text text-white text-[20px] sm:text-md md:text-xl font-bold text-center px-4 w-full min-w-0 whitespace-normal break-words">
             {member.name}
