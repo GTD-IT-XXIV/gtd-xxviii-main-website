@@ -806,7 +806,7 @@ export const committeeTopics: CommitteeTopic[] = [
   },
   {
     name: "Rosyad",
-    full_name: "Rosyad Akbari",
+    full_name: "Rosyad Zulfikar Akbari",
     year_course: "CEE/4",
     og: "OG 2",
     first_image: "/images/committee/welfare/ROSYAD1.jpg",
