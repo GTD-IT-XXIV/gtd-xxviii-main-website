@@ -325,7 +325,7 @@ export default function Page() {
   const restRows = rankingList.slice(3);
 
   return (
-    <div className="relative min-h-screen w-screen overflow-hidden bg-black">
+    <div className="relative min-h-screen w-full overflow-hidden bg-black">
       <div
         className="absolute inset-0 bg-cover bg-center opacity-60"
         style={{ backgroundImage: "url('/images/leaderboard_bg.png')" }}
@@ -351,7 +351,7 @@ export default function Page() {
         </svg>
       </Link>
 
-      <div className="relative flex min-h-screen w-screen items-start justify-center pt-10 pb-10 md:pt-14">
+      <div className="relative flex min-h-screen w-full items-start justify-center pt-10 pb-10 md:pt-14">
         <div className="relative w-[96vw] max-w-[900px] md:w-[80vw] text-[#5c3a1e]">
         <h1 className="mb-2 text-center text-3xl font-extrabold tracking-wide text-white drop-shadow-[0_2px_6px_rgba(0,0,0,0.6)]">
           LEADERBOARD
