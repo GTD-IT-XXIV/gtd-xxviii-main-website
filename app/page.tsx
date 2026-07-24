@@ -1022,7 +1022,7 @@ export default function Home() {
                 transform: `translate(${isRight ? lerp(28, 0, storylineOpacities[i]) : lerp(-28, 0, storylineOpacities[i])}px, -50%)`,
               }}>
               <p className="inline-block text-amber-50/95 text-base leading-relaxed tracking-wide bg-black/75 backdrop-blur-sm border border-white/10 rounded-2xl px-6 py-5"
-                style={{ fontFamily: "AdventureTime, UncialAntiqua, serif", textShadow: "0 2px 10px rgba(0,0,0,0.6)" }}>
+                style={{ fontFamily: "Pixel, UncialAntiqua, serif", textShadow: "0 2px 10px rgba(0,0,0,0.6)" }}>
                 {line}
               </p>
             </div>
