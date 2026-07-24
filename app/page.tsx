@@ -1042,7 +1042,7 @@ export default function Home() {
                 transform: `translate(-50%, ${lerp(16, -50, 1) + (50 - lerp(16, 0, storylineOpacities[i]))}px)`,
               }}>
               <p className="inline-block text-amber-50/95 text-sm leading-relaxed tracking-wide bg-black/85 backdrop-blur-sm border border-white/10 rounded-2xl px-5 py-4"
-                style={{ fontFamily: "AdventureTime, UncialAntiqua, serif", textShadow: "0 2px 10px rgba(0,0,0,0.6)" }}>
+                style={{ fontFamily: "Pixel, UncialAntiqua, serif", textShadow: "0 2px 10px rgba(0,0,0,0.6)" }}>
                 {line}
               </p>
             </div>
