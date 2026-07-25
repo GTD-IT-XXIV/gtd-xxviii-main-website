@@ -797,13 +797,6 @@ export default function Home() {
                 );
               })}
             </div>
-            <a href="https://forms.gle/qs5iAPJgFSy9APbH7"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 inline-block px-8 py-4 rounded-full bg-black hover:bg-white hover:text-black text-white text-sm font-semibold tracking-wider uppercase shadow-lg backdrop-blur-sm border border-white/25 transition-all duration-200 hover:scale-105"
-              style={{ fontFamily: "Pixel, UncialAntiqua, serif", textShadow: "0 2px 8px rgba(0,0,0,0.4)" }}>
-              REGISTER NOW
-            </a>
           </div>
 
           {/* ═══════════════════ MOBILE MAP ═══════════════════ */}
@@ -836,13 +829,6 @@ export default function Home() {
               <p className="text-sky-200 text-[11px] tracking-wider mt-0.5">
                 {selectedLoc ? `✈ Traveling to ${selectedLoc.name}…` : "Tap a region to begin your adventure"}
               </p>
-              <a href="https://forms.gle/qs5iAPJgFSy9APbH7"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="pointer-events-auto inline-block mt-2 px-4 py-1.5 rounded-full bg-black hover:bg-amber-400 text-white text-xs font-semibold tracking-wider uppercase shadow-lg backdrop-blur-sm border border-white/25 transition-all duration-200 hover:scale-105"
-                style={{ fontFamily: "Pixel, UncialAntiqua, serif", textShadow: "0 2px 8px rgba(0,0,0,0.4)" }}>
-                REGISTER NOW
-              </a>
             </div>
 
             {/* Location pins */}
