@@ -28,6 +28,8 @@ interface PodiumCardProps {
   photoTop?: string;     // % from top of card
   textTop?: string;      // % from top of card
   borderColor?: string;
+  // Extra classes for breakpoint-specific overrides (e.g. desktop-only sizing tweaks)
+  className?: string;
 }
 
 function PodiumCard({
@@ -43,10 +45,11 @@ function PodiumCard({
   photoTop = "50%",
   textTop = "68%",
   borderColor = "rgba(92,58,30,0.4)",
+  className = "",
 }: PodiumCardProps) {
   return (
     <div
-      className="absolute z-[2]"
+      className={`absolute z-[2] ${className}`}
       style={{ bottom, left, right, width, aspectRatio: "3 / 4" }}
     >
       {/* Card frame */}
@@ -76,6 +79,26 @@ function PodiumCard({
       </div>
     </div>
   );
+}
+
+/* The leaderboard API reports teams by nickname rather than "OG N", so the
+   OG number has to be looked up explicitly instead of parsed from the name. */
+const OG_NUMBER_BY_NAME: Record<string, number> = {
+  GacoOne: 1,
+  Twoyul: 2,
+  Trimakasih: 3,
+  Tetrice: 4,
+  Pentalite: 5,
+  "Kicau Namia": 6,
+  SETUJUH: 7,
+  Delalapan: 8,
+};
+
+/* Maps a player's team nickname to its house logo; falls back to the
+   generic placeholder if the nickname isn't in the known OG list. */
+function ogLogoSrc(name: string): string {
+  const n = OG_NUMBER_BY_NAME[name];
+  return n ? `/images/houses/logo/${n}.png` : "/images/logo.png";
 }
 
 /* Small icon that gracefully hides itself if the PNG isn't present yet. */
@@ -409,7 +432,7 @@ export default function Page() {
                         {second && (
                           <PodiumCard
                             frameSrc="/images/leaderboard_2.png"
-                            photoSrc="/images/logo.png"
+                            photoSrc={ogLogoSrc(second.Name)}
                             name={second.Name}
                             score={second.Score}
                             bottom="57.5%"
@@ -421,7 +444,7 @@ export default function Page() {
                         {first && (
                           <PodiumCard
                             frameSrc="/images/leaderboard_3.png"
-                            photoSrc="/images/logo.png"
+                            photoSrc={ogLogoSrc(first.Name)}
                             name={first.Name}
                             score={first.Score}
                             bottom="72.5%"
@@ -434,13 +457,14 @@ export default function Page() {
                         {third && (
                           <PodiumCard
                             frameSrc="/images/leaderboard_1.png"
-                            photoSrc="/images/logo.png"
+                            photoSrc={ogLogoSrc(third.Name)}
                             name={third.Name}
                             score={third.Score}
                             bottom="50.5%"
                             right="20%"
                             width="23%"
                             borderColor="#98683C"
+                            className="md:!w-[28.35%] md:!right-[14.65%]"
                           />
                         )}
                       </div>
@@ -478,10 +502,10 @@ export default function Page() {
                             >
                               <span className="w-[8%] shrink-0 text-center">{player.Rank}</span>
                               <span className="flex flex-1 items-center gap-[3%] pl-[2%]">
-                                {/* Round team avatar (logo placeholder) */}
+                                {/* Round team avatar — house logo matching the OG's number */}
                                 <span className="aspect-square h-[2.2em] shrink-0 overflow-hidden rounded-full bg-white ring-1 ring-white/60">
                                   <Image
-                                    src="/images/logo.png"
+                                    src={ogLogoSrc(player.Name)}
                                     alt={`${player.Name} team`}
                                     width={80}
                                     height={80}
