@@ -90,7 +90,7 @@ const OG_NUMBER_BY_NAME: Record<string, number> = {
   Tetrice: 4,
   Pentalite: 5,
   "Kicau Namia": 6,
-  SETUJUH: 7,
+  SeTujuh: 7,
   Delalapan: 8,
 };
 
