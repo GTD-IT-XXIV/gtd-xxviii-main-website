@@ -900,7 +900,7 @@ export const committeeTopics: CommitteeTopic[] = [
   },
   {
     name: "Charles",
-    full_name: "Charles Lukas",
+    full_name: "Charles Lukas Chairos Yo",
     year_course: "EEE/2",
     og: "OG 2",
     first_image: "/images/committee/polog/CHARLES1.jpeg",
