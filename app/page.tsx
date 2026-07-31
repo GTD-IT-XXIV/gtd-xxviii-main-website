@@ -767,6 +767,15 @@ export default function Home() {
               </p>
             </div>
 
+            {/* Memories button — bottom middle */}
+            <a
+              href="https://memories.pintugtd.com"
+              className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 px-6 py-3 rounded-full bg-black text-white border border-white/25 shadow-lg backdrop-blur-sm font-semibold text-base whitespace-nowrap transition-all duration-200 hover:scale-110 hover:shadow-xl"
+              style={{ fontFamily: "Pixel, UncialAntiqua, serif" }}
+            >
+              📸 Memories
+            </a>
+
             {/* Location pins (the character itself is the shared z:10 sprite
                 that jumped onto the map — see below) */}
             <div className="absolute inset-0">
@@ -830,6 +839,18 @@ export default function Home() {
                 {selectedLoc ? `✈ Traveling to ${selectedLoc.name}…` : "Tap a region to begin your adventure"}
               </p>
             </div>
+
+            {/* Memories button — top middle, below the title */}
+            <a
+              href="https://memories.pintugtd.com"
+              className="absolute left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5 px-4 py-2 rounded-full bg-black text-white border border-white/25 shadow-lg backdrop-blur-sm font-semibold text-xs whitespace-nowrap transition-all duration-200 active:scale-110"
+              style={{
+                top: "max(8.25rem, calc(env(safe-area-inset-top) + 7.5rem))",
+                fontFamily: "Pixel, UncialAntiqua, serif",
+              }}
+            >
+              📸 Memories
+            </a>
 
             {/* Location pins */}
             <div className="absolute inset-0">
